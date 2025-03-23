@@ -555,6 +555,7 @@
                     取消報名按鈕們.forEach(按鈕 => {
                         按鈕.addEventListener('click', (event) => {
                             const 場地ID = event.target.dataset.場地id;
+                            console.log("觸發取消報名事件，場地ID:", 場地ID); // 【偵錯 8】 檢查事件是否觸發，以及場地ID
                             取消我的報名(場地ID);
                         });
                     });
