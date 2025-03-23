@@ -94,14 +94,15 @@
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     <script>
         // 初始化 Google Sign-In
+        let auth; // 宣告全域變數
         function initGoogleAuth() {
             gapi.load('auth2', function() {
                 gapi.auth2.init({
-                    client_id: '753946966109-vbdn1mc2fu2ohfoedfqh0k1g2t8v06l9.apps.googleusercontent.com', // 替換成你的 Google Client ID
+                    client_id: 'YOUR_CLIENT_ID.apps.googleusercontent.com', // 替換成你的 Google Client ID
                     cookiepolicy: 'single_host_origin',
                     scope: 'profile email',
-                }).then(function() {
-                    auth = gapi.auth2.getAuthInstance();
+                }).then(function(authInstance) { // 將 authInstance 傳入
+                    auth = authInstance; // 賦值給全域變數
                     updateSignInStatus(auth.isSignedIn.get());
                     auth.isSignedIn.listen(updateSignInStatus);
                 });
@@ -110,6 +111,7 @@
 
         // 登入狀態變更時更新 UI
         function updateSignInStatus(isSignedIn) {
+            console.log("updateSignInStatus called with:", isSignedIn);
             const loginButton = document.getElementById('login-button');
             const loginInfo = document.getElementById('login-info');
             const logoutButton = document.getElementById('logout-button');
@@ -117,7 +119,7 @@
             const adminSection = document.getElementById('admin-section');
 
             if (isSignedIn) {
-                const user = gapi.auth2.getAuthInstance().currentUser.get();
+                const user = auth.currentUser.get(); // 使用全域變數
                 const profile = user.getBasicProfile();
                 document.getElementById('login-name').textContent = profile.getName();
                 document.getElementById('login-email').textContent = profile.getEmail();
@@ -146,12 +148,12 @@
 
         // 登入處理
         function signIn() {
-            gapi.auth2.getAuthInstance().signIn();
+            auth.signIn(); // 使用全域變數
         }
 
         // 登出處理
         function signOut() {
-            gapi.auth2.getAuthInstance().signOut().then(() => {
+            auth.signOut().then(() => { // 使用全域變數
                 console.log('User signed out.');
                 // 清空場次
                 document.getElementById('slot-list').innerHTML = '';
@@ -163,7 +165,7 @@
         function addSlot() {
             const time = document.getElementById('slot-time').value;
             const limit = parseInt(document.getElementById('slot-limit').value);
-            const maleLimit = parseInt(document.getElementById('slot-male-limit').value);
+             const maleLimit = parseInt(document.getElementById('slot-male-limit').value);
             const femaleLimit = parseInt(document.getElementById('slot-female-limit').value);
             const notes = document.getElementById('slot-notes').value;
 
@@ -193,12 +195,12 @@
 
         // 報名場次
         function signUpSlot(index) {
-            if (!gapi.auth2.getAuthInstance().isSignedIn.get()) {
+            if (!auth.isSignedIn.get()) { // 使用全域變數
                 alert('請先登入才能報名');
                 return;
             }
 
-            const user = gapi.auth2.getAuthInstance().currentUser.get();
+            const user = auth.currentUser.get(); // 使用全域變數
             const profile = user.getBasicProfile();
             const name = profile.getName();
             const gender = prompt('請輸入您的性別 (男/女):').toLowerCase();
@@ -234,8 +236,7 @@
                 gender: gender,
                 nickname: nickname
             });
-
-            if(gender === '男') {
+             if(gender === '男') {
                 slots[index].maleCount++;
             } else {
                 slots[index].femaleCount++;
@@ -247,21 +248,20 @@
 
         // 取消報名
         function cancelSignUp(index) {
-            if (!gapi.auth2.getAuthInstance().isSignedIn.get()) {
+            if (!auth.isSignedIn.get()) { // 使用全域變數
                 alert('請先登入');
                 return;
             }
-            const user = gapi.auth2.getAuthInstance().currentUser.get();
+            const user = auth.currentUser.get(); // 使用全域變數
             const email = user.getEmail();
 
             const slotIndex = slots.findIndex(slot => slot.signedUp.find(s => s.email === email));
             if (slotIndex !== -1) {
                 const signedUpIndex = slots[slotIndex].signedUp.findIndex(s => s.email === email);
                 if (signedUpIndex !== -1) {
-                    const gender = slots[slotIndex].signedUp[signedUpIndex].gender;
+                     const gender = slots[slotIndex].signedUp[signedUpIndex].gender;
                     slots[slotIndex].signedUp.splice(signedUpIndex, 1); // Remove the user from the signed up list.
-
-                    if (gender === '男') {
+                     if (gender === '男') {
                          slots[slotIndex].maleCount--;
                     } else {
                         slots[slotIndex].femaleCount--;
@@ -324,7 +324,7 @@
         function loadMySlots() {
             const mySlotsList = document.getElementById('my-slots-list');
             mySlotsList.innerHTML = ''; // Clear previous content
-            const user = gapi.auth2.getAuthInstance().currentUser.get();
+            const user = auth.currentUser.get(); // 使用全域變數
             const email = user.getEmail();
 
             const signedUpSlots = slots.reduce((acc, slot, index) => {
@@ -387,7 +387,7 @@
         }
 
         // 管理員帳號列表
-        const adminEmails = ['kerkerlai@gmail.com', 'another-admin@example.com']; // Replace with actual admin emails
+        const adminEmails = ['your-admin-email@example.com', 'another-admin@example.com']; // Replace with actual admin emails
 
         // 檢查是否為管理員
         function isAdmin(email) {
@@ -396,7 +396,7 @@
 
         // 頁面載入時執行
         window.onload = function() {
-            initGoogleAuth();
+            initGoogleAuth(); // 初始化 Google Auth
             loadSlots();
             document.getElementById('add-slot').onclick = addSlot;
             document.getElementById('login-button').onclick = signIn;
