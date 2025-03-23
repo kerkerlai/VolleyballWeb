@@ -4,421 +4,672 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>排球場地報名系統</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #fef08a; /* 奶油黃 */
+            font-family: 'Inter', sans-serif;
         }
-        .slot-card {
-            background-color: white;
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            margin-bottom: 1rem;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        .slot-card h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            color: #1e293b;
-        }
-        .slot-card p {
-            font-size: 0.875rem;
-            color: #4b5563;
-            margin-bottom: 0.5rem;
-        }
-        .slot-card .actions {
-            display: flex;
-            gap: 0.75rem;
-            margin-top: 1rem;
-        }
-        .slot-card .full {
-            color: red;
+        .section-title {
+            font-size: 2rem;
             font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #1f2937; /* Tailwind gray-800 */
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db; /* Tailwind gray-300 */
+            border-radius: 0.375rem; /* Tailwind rounded-md */
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .form-group textarea {
+            resize: vertical;
+            height: 100px;
+        }
+        .btn-primary {
+            background-color: #6b7280; /* Tailwind gray-500 */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 0.375rem; /* Tailwind rounded-md */
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #374151; /* Tailwind gray-700 */
+        }
+        .btn-secondary {
+            background-color: #e5e7eb; /* Tailwind gray-200 */
+            color: #374151; /* Tailwind gray-700 */
+            padding: 10px 20px;
+            border: none;
+            border-radius: 0.375rem; /* Tailwind rounded-md */
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+            margin-left: 10px;
+        }
+        .btn-secondary:hover {
+            background-color: #d1d5db; /* Tailwind gray-300 */
+        }
+        #場地列表 {
+            margin-top: 20px;
+        }
+        .場地卡片 {
+            background-color: white;
+            border-radius: 0.5rem; /* Tailwind rounded-lg */
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Tailwind shadow-md */
+        }
+        .場地卡片 h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #1f2937; /* Tailwind gray-800 */
+        }
+        .場地卡片 p {
+            margin-bottom: 5px;
+            color: #4b5563; /* Tailwind gray-600 */
+        }
+        .報名人數 {
+            font-weight: bold;
+            color: #6b7280; /* Tailwind gray-500 */
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        #報名確認表單 {
+            margin-top: 20px;
+        }
+        #報名確認表單 h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #1f2937; /* Tailwind gray-800 */
+        }
+        #報名確認表單 ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        #報名確認表單 li {
+            background-color: white;
+            border-radius: 0.5rem; /* Tailwind rounded-lg */
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Tailwind shadow-md */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #4b5563; /* Tailwind gray-600 */
+        }
+        #報名確認表單 li span {
+            font-weight: bold;
+        }
+        #管理員後台 {
+            margin-top: 20px;
+        }
+        #管理員後台 h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #1f2937; /* Tailwind gray-800 */
+        }
+        #管理員後台 .場地統計卡片 {
+            background-color: white;
+            border-radius: 0.5rem; /* Tailwind rounded-lg */
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Tailwind shadow-md */
+        }
+        #管理員後台 .場地統計卡片 h3 {
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+            color: #1f2937; /* Tailwind gray-800 */
+        }
+        #管理員後台 .場地統計卡片 p {
+            margin-bottom: 5px;
+            color: #4b5563; /* Tailwind gray-600 */
+        }
+        #管理員後台 .場地統計卡片 ul {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+        #管理員後台 .場地統計卡片 li {
+            margin-bottom: 5px;
+            color: #4b5563; /* Tailwind gray-600 */
+        }
+        .hidden {
+            display: none;
+        }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0.375rem; /* Tailwind rounded-md */
+            font-size: 1rem;
+        }
+        .alert-success {
+            background-color: #f0fdf4; /* Tailwind green-100 */
+            border: 1px solid #34d399; /* Tailwind green-400 */
+            color: #065f46; /* Tailwind green-800 */
+        }
+        .alert-danger {
+            background-color: #fef2f2; /* Tailwind red-100 */
+            border: 1px solid #f87171; /* Tailwind red-500 */
+            color: #b91c1c; /* Tailwind red-700 */
         }
     </style>
 </head>
-<body class="bg-yellow-100">
-    <div class="container mx-auto p-4 md:p-6">
-        <h1 class="text-2xl font-semibold text-gray-800 mb-6 text-center">排球場地報名系統</h1>
+<body class="bg-gray-100">
+    <div class="container">
+        <h1 class="section-title">排球場地報名系統</h1>
 
-        <div id="admin-section" class="mb-8 p-4 bg-white rounded-lg shadow-md" style="display: none;">
-            <h2 class="text-xl font-semibold text-gray-700 mb-4">管理員區塊</h2>
-            <div class="mb-4">
-                <label for="slot-time" class="block text-gray-700 text-sm font-bold mb-2">場地時間 (例如: 3/23(日)下午12:20-15:20三米線):</label>
-                <input type="text" id="slot-time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="請輸入場地時間">
-            </div>
-            <div class="mb-4">
-                <label for="slot-limit" class="block text-gray-700 text-sm font-bold mb-2">人數限制:</label>
-                <input type="number" id="slot-limit" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="10">
-            </div>
-            <div class="mb-4">
-                <label for="slot-male-limit" class="block text-gray-700 text-sm font-bold mb-2">男生人數限制:</label>
-                <input type="number" id="slot-male-limit" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="5">
-            </div>
-            <div class="mb-4">
-                <label for="slot-female-limit" class="block text-gray-700 text-sm font-bold mb-2">女生人數限制:</label>
-                <input type="number" id="slot-female-limit" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="5">
-            </div>
-            <div class="mb-4">
-                <label for="slot-notes" class="block text-gray-700 text-sm font-bold mb-2">附註:</label>
-                <input type="text" id="slot-notes" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="可輸入場地注意事項">
-            </div>
-            <button id="add-slot" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">新增場地時間</button>
+        <div id="場地發布表單" class="hidden">
+            <h2 class="section-title">發布場地資訊</h2>
+            <form id="場地表單">
+                <div class="form-group">
+                    <label for="標題">標題</label>
+                    <input type="text" id="標題" name="標題" placeholder="請輸入場地標題" required>
+                </div>
+                <div class="form-group">
+                    <label for="場地位置">場地位置</label>
+                    <input type="text" id="場地位置" name="場地位置" placeholder="請輸入場地位置" required>
+                </div>
+                <div class="form-group">
+                    <label for="費用">費用</label>
+                    <input type="number" id="費用" name="費用" placeholder="請輸入費用" required>
+                </div>
+                <div class="form-group">
+                    <label for="時間">時間</label>
+                    <select id="時間" name="時間" required>
+                        <option value="" disabled selected>請選擇時間</option>
+                        <option value="星期一 18:00-20:00">星期一 18:00-20:00</option>
+                        <option value="星期二 18:00-20:00">星期二 18:00-20:00</option>
+                        <option value="星期三 18:00-20:00">星期三 18:00-20:00</option>
+                        <option value="星期四 18:00-20:00">星期四 18:00-20:00</option>
+                        <option value="星期五 18:00-20:00">星期五 18:00-20:00</option>
+                        <option value="星期六 14:00-16:00">星期六 14:00-16:00</option>
+                        <option value="星期日 14:00-16:00">星期日 14:00-16:00</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="男女比例">男女比例</label>
+                    <select id="男女比例" name="男女比例" required>
+                        <option value="" disabled selected>請選擇男女比例</option>
+                        <option value="不限">不限</option>
+                        <option value="男多於女">男多於女</option>
+                        <option value="女多於男">女多於男</option>
+                        <option value="男女平均">男女平均</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="其他敘述">其他敘述</label>
+                    <textarea id="其他敘述" name="其他敘述" placeholder="請輸入其他敘述"></textarea>
+                </div>
+                <button type="submit" class="btn-primary">發布場地</button>
+                <button type="button" class="btn-secondary" id="取消發布">取消</button>
+            </form>
         </div>
 
-        <div id="user-section" class="mb-8">
-            <h2 class="text-xl font-semibold text-gray-700 mb-4">使用者區塊</h2>
-            <p class="mb-4 text-gray-600">請使用 Google 帳號登入以報名場地。</p>
-            <div id="login-info" class="bg-white rounded-lg shadow-md p-4 mb-4" style="display: none;">
-                <p><span class="font-semibold text-gray-700">登入者:</span> <span id="login-name" class="text-blue-600"></span></p>
-                <p><span class="font-semibold text-gray-700">信箱:</span> <span id="login-email" class="text-blue-600"></span></p>
-                <button id="logout-button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-2">登出</button>
-            </div>
-            <button id="login-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">使用 Google 登入</button>
+        <div id="場地列表">
+            <h2 class="section-title">可報名場地</h2>
+            <div id="場地列表內容">
+                </div>
         </div>
 
-        <div id="slot-list">
-            <h2 class="text-xl font-semibold text-gray-700 mb-4">可報名場次</h2>
+        <div id="報名確認表單" class="hidden">
+            <h2 class="section-title">我的報名表單</h2>
+            <ul id="報名確認表單內容">
+                </ul>
         </div>
 
-        <div id="my-slots" class="mt-8" style="display: none;">
-            <h2 class="text-xl font-semibold text-gray-700 mb-4">我的報名場次</h2>
-            <div id="my-slots-list">
-            </div>
+        <div id="管理員後台" class="hidden">
+            <h2 class="section-title">管理員後台</h2>
+            <div id="管理員後台內容">
+                </div>
+        </div>
+
+        <div id="登入註冊區">
+            <button id="登入按鈕" class="btn-primary">登入 / 註冊</button>
+        </div>
+        <div id="登出註冊區" class="hidden">
+            <button id="登出按鈕" class="btn-primary">登出</button>
         </div>
     </div>
 
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
     <script>
-        // 初始化 Google Sign-In
-        let auth; // 宣告全域變數
-        function initGoogleAuth() {
-            gapi.load('auth2', function() {
-                gapi.auth2.init({
-                    client_id: '753946966109-vbdn1mc2fu2ohfoedfqh0k1g2t8v06l9.apps.googleusercontent.com', // 替換成你的 Google Client ID
-                    cookiepolicy: 'single_host_origin',
-                    scope: 'profile email',
-                }).then(function(authInstance) { // 將 authInstance 傳入
-                    auth = authInstance; // 賦值給全域變數
-                    updateSignInStatus(auth.isSignedIn.get());
-                    auth.isSignedIn.listen(updateSignInStatus);
-                    // 在這裡呼叫載入場次
-                    loadSlots();
-                }).catch(error => {
-                    console.error("Error initializing Google Auth:", error); // 加上錯誤處理
+        // Firebase 相關設定 (請替換成您的 Firebase 配置)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let currentUser = null;
+        let userRole = 'user'; // 預設為一般使用者
+
+        // HTML 元素
+        const 場地表單 = document.getElementById('場地表單');
+        const 場地列表內容 = document.getElementById('場地列表內容');
+        const 報名確認表單內容 = document.getElementById('報名確認表單內容');
+        const 管理員後台內容 = document.getElementById('管理員後台內容');
+        const 場地發布表單 = document.getElementById('場地發布表單');
+        const 管理員後台 = document.getElementById('管理員後台');
+        const 報名確認表單 = document.getElementById('報名確認表單');
+        const 登入註冊區 = document.getElementById('登入註冊區');
+        const 登入按鈕 = document.getElementById('登入按鈕');
+        const 登出註冊區 = document.getElementById('登出註冊區');
+        const 登出按鈕 = document.getElementById('登出按鈕');
+        const 取消發布按鈕 = document.getElementById('取消發布');
+
+        // 登入/註冊事件
+        登入按鈕.addEventListener('click', () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    // 登入成功
+                    currentUser = result.user;
+                    console.log('登入成功', currentUser);
+                    checkUserRole(); // 檢查使用者角色
+                })
+                .catch((error) => {
+                    // 登入失敗
+                    console.error('登入失敗', error);
+                    alert('登入失敗，請重試。');
                 });
-            });
-        }
+        });
 
-        // 登入狀態變更時更新 UI
-        function updateSignInStatus(isSignedIn) {
-            console.log("updateSignInStatus called with:", isSignedIn);
-            const loginButton = document.getElementById('login-button');
-            const loginInfo = document.getElementById('login-info');
-            const logoutButton = document.getElementById('logout-button');
-            const mySlotsDiv = document.getElementById('my-slots');
-            const adminSection = document.getElementById('admin-section');
+        // 登出事件
+        登出按鈕.addEventListener('click', () => {
+            auth.signOut()
+                .then(() => {
+                    // 登出成功
+                    currentUser = null;
+                    userRole = 'user'; // 重置使用者角色
+                    console.log('登出成功');
+                    updateUI(); // 更新UI
+                })
+                .catch((error) => {
+                    // 登出失敗
+                    console.error('登出失敗', error);
+                    alert('登出失敗，請重試。');
+                });
+        });
 
-            if (isSignedIn) {
-                const user = auth.currentUser.get(); // 使用全域變數
-                const profile = user.getBasicProfile();
-                document.getElementById('login-name').textContent = profile.getName();
-                document.getElementById('login-email').textContent = profile.getEmail();
-                loginButton.style.display = 'none';
-                loginInfo.style.display = 'block';
-                logoutButton.style.display = 'block';
-                mySlotsDiv.style.display = 'block';
-                loadMySlots(); // 載入使用者已報名場次
-
-                // 判斷是否為管理員
-                if (isAdmin(user.getEmail())) {
-                    adminSection.style.display = 'block';
-                } else {
-                    adminSection.style.display = 'none';
-                }
-
+        // 檢查使用者角色
+        function checkUserRole() {
+            if (currentUser) {
+                // 檢查是否為管理員 (這裡的邏輯需要您根據您的資料庫設計來調整)
+                // 例如，您可以將管理員的 UID 存在一個特定的集合中
+                db.collection('admins').doc(currentUser.uid).get()
+                    .then((doc) => {
+                        if (doc.exists) {
+                            userRole = 'admin';
+                        } else {
+                            userRole = 'user';
+                        }
+                        updateUI();
+                    })
+                    .catch((error) => {
+                        console.error("Error getting document:", error);
+                        alert('無法驗證您的身份，請稍後再試。');
+                        userRole = 'user';
+                        updateUI();
+                    });
             } else {
-                loginButton.style.display = 'block';
-                loginInfo.style.display = 'none';
-                logoutButton.style.display = 'none';
-                mySlotsDiv.style.display = 'none';
-                adminSection.style.display = 'none';
-                document.getElementById('my-slots-list').innerHTML = ''; // 清空我的報名場次
+                updateUI();
             }
         }
 
-        // 登入處理
-        function signIn() {
-            auth.signIn().then(() => {
-                // 登入成功後重新載入場次
-                loadSlots();
-            }).catch(error => {
-                console.error("Google Sign-In error:", error); // 加上錯誤處理
-            }); // 使用全域變數
-        }
+        // 更新 UI
+        function updateUI() {
+            登入註冊區.classList.toggle('hidden', !!currentUser);
+            登出註冊區.classList.toggle('hidden', !currentUser);
+            場地發布表單.classList.toggle('hidden', userRole !== 'admin');
+            管理員後台.classList.toggle('hidden', userRole !== 'admin');
+            報名確認表單.classList.toggle('hidden', !currentUser);
 
-        // 登出處理
-        function signOut() {
-            auth.signOut().then(() => { // 使用全域變數
-                console.log('User signed out.');
-                // 清空場次
-                document.getElementById('slot-list').innerHTML = '';
-                loadSlots();
-            }).catch(error => {
-                console.error("Google Sign-Out error:", error); // 加上錯誤處理
-            });
-        }
-
-        // 新增場次
-        function addSlot() {
-            const time = document.getElementById('slot-time').value;
-            const limit = parseInt(document.getElementById('slot-limit').value);
-            const maleLimit = parseInt(document.getElementById('slot-male-limit').value);
-            const femaleLimit = parseInt(document.getElementById('slot-female-limit').value);
-            const notes = document.getElementById('slot-notes').value;
-
-            if (time) {
-                const newSlot = {
-                    time: time,
-                    limit: limit,
-                    maleLimit: maleLimit,
-                    femaleLimit: femaleLimit,
-                    notes: notes,
-                    signedUp: [],
-                    maleCount: 0,
-                    femaleCount: 0
-                };
-                slots.push(newSlot);
-                saveSlots();
-                loadSlots();
-                document.getElementById('slot-time').value = '';
-                document.getElementById('slot-limit').value = '10';
-                document.getElementById('slot-male-limit').value = '5';
-                document.getElementById('slot-female-limit').value = '5';
-                document.getElementById('slot-notes').value = '';
-            } else {
-                alert('請輸入場地時間');
-            }
-        }
-
-        // 報名場次
-        function signUpSlot(index) {
-            if (!auth.isSignedIn.get()) { // 使用全域變數
-                alert('請先登入才能報名');
-                return;
-            }
-
-            const user = auth.currentUser.get(); // 使用全域變數
-            const profile = user.getBasicProfile();
-            const name = profile.getName();
-            const gender = prompt('請輸入您的性別 (男/女):').toLowerCase();
-            const nickname = prompt('請輸入您的綽號:');
-
-            if (gender !== '男' && gender !== '女') {
-                alert('性別請輸入 男 或 女');
-                return;
-            }
-
-            if (slots[index].signedUp.find(s => s.email === user.getEmail())) {
-                alert('您已報名過此場次');
-                return;
-            }
-
-            if (slots[index].signedUp.length >= slots[index].limit) {
-                alert('此場次已額滿');
-                return;
-            }
-            if (gender === '男' && slots[index].maleCount >= slots[index].maleLimit) {
-                alert('此場次男生人數已達上限');
-                return;
-            }
-
-            if (gender === '女' && slots[index].femaleCount >= slots[index].femaleLimit) {
-                alert('此場次女生人數已達上限');
-                return;
-            }
-
-            slots[index].signedUp.push({
-                email: user.getEmail(),
-                name: name,
-                gender: gender,
-                nickname: nickname
-            });
-            if (gender === '男') {
-                slots[index].maleCount++;
-            } else {
-                slots[index].femaleCount++;
-            }
-            saveSlots();
-            loadSlots();
-            loadMySlots();
-        }
-
-        // 取消報名
-        function cancelSignUp(index) {
-            if (!auth.isSignedIn.get()) { // 使用全域變數
-                alert('請先登入');
-                return;
-            }
-            const user = auth.currentUser.get(); // 使用全域變數
-            const email = user.getEmail();
-
-            const slotIndex = slots.findIndex(slot => slot.signedUp.find(s => s.email === email));
-            if (slotIndex !== -1) {
-                const signedUpIndex = slots[slotIndex].signedUp.findIndex(s => s.email === email);
-                if (signedUpIndex !== -1) {
-                    const gender = slots[slotIndex].signedUp[signedUpIndex].gender;
-                    slots[slotIndex].signedUp.splice(signedUpIndex, 1); // Remove the user from the signed up list.
-                    if (gender === '男') {
-                        slots[slotIndex].maleCount--;
-                    } else {
-                        slots[slotIndex].femaleCount--;
-                    }
-                    saveSlots();
-                    loadSlots(); // Refresh the slots display.
-                    loadMySlots(); // Refresh the user's signed up slots.
-                    alert('已取消報名');
-                } else {
-                    alert('您未報名此場次'); // This should ideally not happen, but handle it.
+            if (currentUser) {
+                // 載入資料
+                載入場地資料();
+                載入我的報名資料();
+                if (userRole === 'admin') {
+                    載入場地統計資料();
                 }
             } else {
-                alert('您未報名任何場次');
+                // 清空資料
+                場地列表內容.innerHTML = '';
+                報名確認表單內容.innerHTML = '';
+                管理員後台內容.innerHTML = '';
             }
         }
 
-        // 載入場次
-        function loadSlots() {
-            const slotList = document.getElementById('slot-list');
-            if (!slotList) return; // 如果 slotList 不存在，直接返回
-
-            slotList.innerHTML = ''; // Clear existing slots
-
-            slots.forEach((slot, index) => {
-                const slotCard = document.createElement('div');
-                slotCard.className = 'slot-card';
-
-                const title = document.createElement('h3');
-                title.textContent = slot.time;
-
-                const info = document.createElement('p');
-                info.textContent = `人數限制: ${slot.limit} (男: ${slot.maleLimit}, 女: ${slot.femaleLimit}), 已報名: ${slot.signedUp.length} (男: ${slot.maleCount}, 女: ${slot.femaleCount})`;
-
-                const notes = document.createElement('p');
-                notes.textContent = `附註: ${slot.notes}`;
-
-                const actionsDiv = document.createElement('div');
-                actionsDiv.className = 'actions';
-
-                if (slot.signedUp.length < slot.limit) {
-                    const signUpButton = document.createElement('button');
-                    signUpButton.textContent = '報名';
-                    signUpButton.className = 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline';
-                    signUpButton.addEventListener('click', () => signUpSlot(index)); // 使用addEventListener
-                    actionsDiv.appendChild(signUpButton);
-                } else {
-                    const fullSpan = document.createElement('span');
-                    fullSpan.textContent = '已額滿';
-                    fullSpan.className = 'full';
-                    actionsDiv.appendChild(fullSpan);
-                }
-
-                slotCard.appendChild(title);
-                slotCard.appendChild(info);
-                slotCard.appendChild(notes);
-                slotCard.appendChild(actionsDiv);
-                slotList.appendChild(slotCard);
-            });
-        }
-
-        // 載入使用者已報名場次
-        function loadMySlots() {
-            const mySlotsList = document.getElementById('my-slots-list');
-            if (!mySlotsList) return; // 檢查元素是否存在
-
-            mySlotsList.innerHTML = ''; // Clear previous content
-            const user = auth.currentUser.get(); // 使用全域變數
-            const email = user.getEmail();
-
-            const signedUpSlots = slots.reduce((acc, slot, index) => {
-                if (slot.signedUp.find(s => s.email === email)) {
-                    acc.push({ slot: slot, index: index }); // Store both the slot and its index
-                }
-                return acc;
-            }, []);
-
-            if (signedUpSlots.length === 0) {
-                mySlotsList.innerHTML = '<p class="text-gray-500">您尚未報名任何場次</p>';
-                return;
-            }
-
-            signedUpSlots.forEach(item => { // Use the stored index
-                const slot = item.slot;
-                const index = item.index;
-                const slotCard = document.createElement('div');
-                slotCard.className = 'slot-card';
-                slotCard.innerHTML = `
-                    <h3>${slot.time}</h3>
-                    <p>您的綽號: ${slot.signedUp.find(s => s.email === email).nickname}</p>
-                    <p>您的性別: ${slot.signedUp.find(s => s.email === email).gender}</p>
-                `;
-                const cancelButton = document.createElement('button');
-                cancelButton.textContent = '取消報名';
-                cancelButton.className = 'bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-2';
-                cancelButton.addEventListener('click', () => cancelSignUp(index));
-                slotCard.appendChild(cancelButton);
-                mySlotsList.appendChild(slotCard);
-            });
-        }
-
-        // 資料持久化
-        let slots = JSON.parse(localStorage.getItem('volleyballSlots')) || [
-            {
-                time: "3/24(一)下午18:00-21:00",
-                limit: 10,
-                maleLimit: 5,
-                femaleLimit: 5,
-                notes: "自由參加",
-                signedUp: [],
-                maleCount: 0,
-                femaleCount: 0
-            },
-            {
-                time: "3/26(三)晚上20:00-22:00",
-                limit: 8,
-                maleLimit: 4,
-                femaleLimit: 4,
-                notes: "需有基礎",
-                signedUp: [],
-                maleCount: 0,
-                femaleCount: 0
-            },
+        // 時間選項陣列
+        const timeOptions = [
+            "星期一 18:00-20:00",
+            "星期二 18:00-20:00",
+            "星期三 18:00-20:00",
+            "星期四 18:00-20:00",
+            "星期五 18:00-20:00",
+            "星期六 14:00-16:00",
+            "星期日 14:00-16:00"
         ];
 
-        function saveSlots() {
-            localStorage.setItem('volleyballSlots', JSON.stringify(slots));
-        }
+        // 表單提交事件
+        場地表單.addEventListener('submit', (event) => {
+            event.preventDefault();
 
-        // 管理員帳號列表
-        const adminEmails = ['kerkerlai@gmail.com', 'another-admin@example.com']; // Replace with actual admin emails
+            const 標題 = document.getElementById('標題').value;
+            const 場地位置 = document.getElementById('場地位置').value;
+            const 費用 = parseInt(document.getElementById('費用').value);
+            const 時間 = document.getElementById('時間').value;
+            const 男女比例 = document.getElementById('男女比例').value;
+            const 其他敘述 = document.getElementById('其他敘述').value;
 
-        // 檢查是否為管理員
-        function isAdmin(email) {
-            return adminEmails.includes(email);
-        }
+            if (!標題 || !場地位置 || isNaN(費用) || !時間 || !男女比例) {
+                alert('請填寫所有必填欄位。');
+                return;
+            }
 
-        // 頁面載入時執行
-        window.onload = function() {
-            // 確保在 DOMContentLoaded 事件後執行
-            document.addEventListener('DOMContentLoaded', () => {
-                initGoogleAuth(); // 初始化 Google Auth
-                document.getElementById('add-slot').addEventListener('click', addSlot);
-                document.getElementById('login-button').addEventListener('click', signIn);
-                document.getElementById('logout-button').addEventListener('click', signOut);
+            db.collection('場地').add({
+                標題: 標題,
+                場地位置: 場地位置,
+                費用: 費用,
+                時間: 時間,
+                男女比例: 男女比例,
+                其他敘述: 其他敘述,
+                報名人數: 0,
+                男生人數: 0,
+                女生人數: 0,
+                已報名者: [] // 儲存已報名者的 UID
+            })
+            .then(() => {
+                console.log('場地資訊發布成功');
+                alert('場地資訊發布成功！');
+                場地表單.reset();
+                載入場地資料(); // 重新載入場地資料
+            })
+            .catch((error) => {
+                console.error('場地資訊發布失敗', error);
+                alert('場地資訊發布失敗，請重試。');
             });
-        };
+        });
+
+        // 取消發布按鈕事件
+        取消發布按鈕.addEventListener('click', () => {
+            場地表單.reset();
+        });
+
+        // 載入場地資料
+        function 載入場地資料() {
+            場地列表內容.innerHTML = ''; // 清空現有內容
+            db.collection('場地').get()
+                .then((snapshot) => {
+                    snapshot.forEach((doc) => {
+                        const 場地資料 = doc.data();
+                        const 場地卡片 = document.createElement('div');
+                        場地卡片.className = '場地卡片';
+                        場地卡片.innerHTML = `
+                            <h3>${場地資料.標題}</h3>
+                            <p>場地位置：${場地資料.場地位置}</p>
+                            <p>費用：${場地資料.費用} 元</p>
+                            <p>時間：${場地資料.時間}</p>
+                            <p>男女比例：${場地資料.男女比例}</p>
+                            <p>其他敘述：${場地資料.其他敘述}</p>
+                            <p class="報名人數">報名人數：${場地資料.報名人數} / ${場地資料.男女比例 === '不限' ? '無限制' : 
+                                                                    場地資料.男女比例 === '男多於女' ? '男多' : 
+                                                                    場地資料.男女比例 === '女多於男' ? '女多' : '男女平均'}</p>
+                            <div class="actions">
+                                <button class="btn-primary" data-場地id="${doc.id}">我要報名</button>
+                            </div>
+                        `;
+                        場地列表內容.appendChild(場地卡片);
+                    });
+                    // 在場地卡片生成後，為報名按鈕添加事件監聽器
+                    const 報名按鈕們 = document.querySelectorAll('.場地卡片 .btn-primary');
+                    報名按鈕們.forEach(按鈕 => {
+                        按鈕.addEventListener('click', (event) => {
+                            const 場地ID = event.target.dataset.場地id;
+                            處理報名(場地ID);
+                        });
+                    });
+                })
+                .catch((error) => {
+                    console.error('載入場地資料失敗', error);
+                    alert('載入場地資料失敗，請重試。');
+                });
+        }
+
+        // 處理報名
+        function 處理報名(場地ID) {
+            if (!currentUser) {
+                alert('請先登入才能報名場地。');
+                return;
+            }
+
+            const userGender = prompt("請輸入您的性別 (男/女):").toLowerCase();
+            if (userGender !== '男' && userGender !== '女') {
+                alert('性別輸入錯誤，請重新報名。');
+                return;
+            }
+
+            db.collection('場地').doc(場地ID).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const 場地資料 = doc.data();
+                        if (場地資料.已報名者 && 場地資料.已報名者.includes(currentUser.uid)) {
+                            alert('您已經報名過此場地了。');
+                            return;
+                        }
+
+                        // 檢查男女比例
+                        if (場地資料.男女比例 !== '不限') {
+                            let 男生人數 = 場地資料.男生人數 || 0;
+                            let 女生人數 = 場地資料.女生人數 || 0;
+                            if (userGender === '男') {
+                                男生人數++;
+                            } else {
+                                女生人數++;
+                            }
+
+                            let 可以報名 = true;
+                            if (場地資料.男女比例 === '男多於女' && 男生人數 <= 女生人數) {
+                                可以報名 = false;
+                            } else if (場地資料.男女比例 === '女多於男' && 女生人數 <= 男生人數) {
+                                可以報名 = false;
+                            } else if (場地資料.男女比例 === '男女平均' && Math.abs(男生人數 - 女生人數) > 1) {
+                                可以報名 = false;
+                            }
+
+                            if (!可以報名) {
+                                alert('此場地男女比例限制，目前無法報名。');
+                                return;
+                            }
+                        }
+
+                        // 更新報名人數和已報名者
+                        db.collection('場地').doc(場地ID).update({
+                            報名人數: (場地資料.報名人數 || 0) + 1,
+                            男生人數: userGender === '男' ? (場地資料.男生人數 || 0) + 1 : (場地資料.男生人數 || 0),
+                            女生人數: userGender === '女' ? (場地資料.女生人數 || 0) + 1 : (場地資料.女生人數 || 0),
+                            已報名者: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
+                        })
+                        .then(() => {
+                            console.log('報名成功');
+                            alert('報名成功！');
+                            載入場地資料(); // 重新載入場地資料以更新人數
+                            載入我的報名資料(); // 更新我的報名資料
+                        })
+                        .catch((error) => {
+                            console.error('報名失敗', error);
+                            alert('報名失敗，請重試。');
+                        });
+                    } else {
+                        console.error('找不到場地');
+                        alert('找不到場地，請重試。');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error getting document:', error);
+                    alert('發生錯誤，請重試。');
+                });
+        }
+
+        // 載入我的報名資料
+        function 載入我的報名資料() {
+            if (!currentUser) return;
+
+            報名確認表單內容.innerHTML = ''; // 清空現有內容
+            let hasReservations = false; // 用於判斷是否有報名資料
+
+            db.collection('場地').where('已報名者', 'array-contains', currentUser.uid).get()
+                .then((snapshot) => {
+                    snapshot.forEach((doc) => {
+                        hasReservations = true;
+                        const 場地資料 = doc.data();
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `
+                            <span>${場地資料.標題} - ${場地資料.時間}</span>
+                            <button class="btn-secondary" data-場地id="${doc.id}">取消報名</button>
+                        `;
+                        報名確認表單內容.appendChild(listItem);
+                    });
+
+                    if (!hasReservations) {
+                        報名確認表單內容.innerHTML = '<p>您尚未報名任何場地。</p>';
+                    }
+
+                    // 綁定取消報名事件
+                    const 取消報名按鈕們 = 報名確認表單內容.querySelectorAll('.btn-secondary');
+                    取消報名按鈕們.forEach(按鈕 => {
+                        按鈕.addEventListener('click', (event) => {
+                            const 場地ID = event.target.dataset.場地id;
+                            處理取消報名(場地ID);
+                        });
+                    });
+                })
+                .catch((error) => {
+                    console.error('載入我的報名資料失敗', error);
+                    alert('載入我的報名資料失敗，請重試。');
+                });
+        }
+
+        // 處理取消報名
+        function 處理取消報名(場地ID) {
+            if (!currentUser) {
+                alert('請先登入才能取消報名。');
+                return;
+            }
+
+            db.collection('場地').doc(場地ID).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const 場地資料 = doc.data();
+
+                        if (!場地資料.已報名者 || !場地資料.已報名者.includes(currentUser.uid)) {
+                            alert('您尚未報名此場地，無法取消報名。');
+                            return;
+                        }
+                        const userGender = prompt("請輸入您的性別 (男/女):").toLowerCase();
+                        if (userGender !== '男' && userGender !== '女') {
+                            alert('性別輸入錯誤，請重新取消報名。');
+                            return;
+                        }
+                        // 更新報名人數和已報名者
+                        db.collection('場地').doc(場地ID).update({
+                            報名人數: Math.max(0, (場地資料.報名人數 || 0) - 1), // 確保人數不為負數
+                            男生人數: userGender === '男' ? Math.max(0, (場地資料.男生人數 || 0) - 1) : (場地資料.男生人數 || 0),
+                            女生人數: userGender === '女' ? Math.max(0, (場地資料.女生人數 || 0) - 1) : (場地資料.女生人數 || 0),
+                            已報名者: firebase.firestore.FieldValue.arrayRemove(currentUser.uid)
+                        })
+                        .then(() => {
+                            console.log('取消報名成功');
+                            alert('取消報名成功！');
+                            載入場地資料(); // 重新載入場地資料以更新人數
+                            載入我的報名資料(); // 更新我的報名資料
+                        })
+                        .catch((error) => {
+                            console.error('取消報名失敗', error);
+                            alert('取消報名失敗，請重試。');
+                        });
+                    } else {
+                        console.error('找不到場地');
+                        alert('找不到場地，請重試。');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error getting document:', error);
+                    alert('發生錯誤，請重試。');
+                });
+        }
+
+        // 載入場地統計資料 (管理員後台)
+        function 載入場地統計資料() {
+            管理員後台內容.innerHTML = ''; // 清空現有內容
+            db.collection('場地').get()
+                .then((snapshot) => {
+                    snapshot.forEach((doc) => {
+                        const 場地資料 = doc.data();
+                        const 場地統計卡片 = document.createElement('div');
+                        場地統計卡片.className = '場地統計卡片';
+                        場地統計卡片.innerHTML = `
+                            <h3>${場地資料.標題}</h3>
+                            <p>總報名人數：${場地資料.報名人數}</p>
+                            <p>男生人數：${場地資料.男生人數 || 0}</p>
+                            <p>女生人數：${場地資料.女生人數 || 0}</p>
+                            <p>男女比例：${場地資料.男女比例}</p>
+                            <ul>
+                                <li>已報名者：${場地資料.已報名者 ? 場地資料.已報名者.length : 0} 人</li>
+                            </ul>
+                        `;
+                        管理員後台內容.appendChild(場地統計卡片);
+                    });
+                })
+                .catch((error) => {
+                    console.error('載入場地統計資料失敗', error);
+                    alert('載入場地統計資料失敗，請重試。');
+                });
+        }
+
+        // 初始載入
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                console.log('已登入', currentUser);
+                checkUserRole();
+            } else {
+                console.log('未登入');
+                updateUI();
+            }
+        });
     </script>
 </body>
 </html>
