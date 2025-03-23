@@ -105,6 +105,8 @@
                     auth = authInstance; // 賦值給全域變數
                     updateSignInStatus(auth.isSignedIn.get());
                     auth.isSignedIn.listen(updateSignInStatus);
+                    // 在這裡呼叫載入場次
+                    loadSlots();
                 });
             });
         }
@@ -148,7 +150,10 @@
 
         // 登入處理
         function signIn() {
-            auth.signIn(); // 使用全域變數
+            auth.signIn().then(() => {
+                // 登入成功後重新載入場次
+                loadSlots();
+            }); // 使用全域變數
         }
 
         // 登出處理
@@ -165,7 +170,7 @@
         function addSlot() {
             const time = document.getElementById('slot-time').value;
             const limit = parseInt(document.getElementById('slot-limit').value);
-             const maleLimit = parseInt(document.getElementById('slot-male-limit').value);
+            const maleLimit = parseInt(document.getElementById('slot-male-limit').value);
             const femaleLimit = parseInt(document.getElementById('slot-female-limit').value);
             const notes = document.getElementById('slot-notes').value;
 
@@ -281,6 +286,8 @@
         // 載入場次
         function loadSlots() {
             const slotList = document.getElementById('slot-list');
+            if (!slotList) return; // 如果 slotList 不存在，直接返回
+
             slotList.innerHTML = ''; // Clear existing slots
 
             slots.forEach((slot, index) => {
@@ -303,7 +310,7 @@
                     const signUpButton = document.createElement('button');
                     signUpButton.textContent = '報名';
                     signUpButton.className = 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline';
-                    signUpButton.onclick = () => signUpSlot(index);
+                    signUpButton.addEventListener('click', () => signUpSlot(index)); // 使用addEventListener
                     actionsDiv.appendChild(signUpButton);
                 } else {
                     const fullSpan = document.createElement('span');
@@ -323,6 +330,8 @@
         // 載入使用者已報名場次
         function loadMySlots() {
             const mySlotsList = document.getElementById('my-slots-list');
+            if (!mySlotsList) return; // 檢查元素是否存在
+
             mySlotsList.innerHTML = ''; // Clear previous content
             const user = auth.currentUser.get(); // 使用全域變數
             const email = user.getEmail();
@@ -352,7 +361,7 @@
                 const cancelButton = document.createElement('button');
                 cancelButton.textContent = '取消報名';
                 cancelButton.className = 'bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-2';
-                cancelButton.onclick = () => cancelSignUp(index); // Use the index here
+                cancelButton.addEventListener('click', () => cancelSignUp(index));
                 slotCard.appendChild(cancelButton);
                 mySlotsList.appendChild(slotCard);
             });
@@ -397,10 +406,13 @@
         // 頁面載入時執行
         window.onload = function() {
             initGoogleAuth(); // 初始化 Google Auth
-            loadSlots();
-            document.getElementById('add-slot').onclick = addSlot;
-            document.getElementById('login-button').onclick = signIn;
-            document.getElementById('logout-button').onclick = signOut;
+
+            // 確保在 DOMContentLoaded 事件後執行
+            document.addEventListener('DOMContentLoaded', () => {
+                document.getElementById('add-slot').addEventListener('click', addSlot);
+                document.getElementById('login-button').addEventListener('click', signIn);
+                document.getElementById('logout-button').addEventListener('click', signOut);
+            });
         };
     </script>
 </body>
