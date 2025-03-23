@@ -264,11 +264,19 @@
                     <div class="form-group">
                         <label for="開始時間">開始時間</label>
 <<<<<<< HEAD
+<<<<<<< HEAD
                         <input type="text" id="開始時間" name="開始時間" required>
                     </div>
                     <div class="form-group">
                         <label for="結束時間">結束時間</label>
                         <input type="text" id="結束時間" name="結束時間" required>
+=======
+                        <input type="time" id="開始時間" name="開始時間" placeholder="HH:MM" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="結束時間">結束時間</label>
+                        <input type="time" id="結束時間" name="結束時間" placeholder="HH:MM" required>
+>>>>>>> parent of 2b8a2cf (V4-1)
 =======
                         <input type="time" id="開始時間" name="開始時間" placeholder="HH:MM" required>
                     </div>
@@ -335,13 +343,13 @@
     <script>
         // Firebase 相關設定 (請替換成您的 Firebase 配置)
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID",
-            measurementId: "YOUR_MEASUREMENT_ID"
+            apiKey: "AIzaSyB8PzKSCgIl0_JIVxetSK3Lujwpqr-eEJA",
+            authDomain: "volleyballweb-6476a.firebaseapp.com",
+            projectId: "volleyballweb-6476a",
+            storageBucket: "volleyballweb-6476a.firebasestorage.app",
+            messagingSenderId: "107455998937",
+            appId: "1:107455998937:web:1203dc9377ccf38a2547c8",
+            measurementId: "G-1J504YXCHY"
         };
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
@@ -519,9 +527,12 @@
                     snapshot.forEach((doc) => {
                         const 場地資料 = doc.data();
 <<<<<<< HEAD
+<<<<<<< HEAD
                         場地資料快取.push({ id: doc.id, ...場地資料 }); // 將資料存入快取
                     });
 =======
+=======
+>>>>>>> parent of 2b8a2cf (V4-1)
                         const 場地卡片 = document.createElement('div');
                         場地卡片.className = '場地卡片';
                         場地卡片.innerHTML = `
@@ -568,6 +579,7 @@ const 場地ID = event.target.dataset.場地id;
                 });
         }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
         function 顯示場地資料(場地資料) {
             場地列表內容.innerHTML = '';
@@ -687,11 +699,16 @@ const 場地ID = event.target.dataset.場地id;
                     });
                 });
 =======
+=======
+>>>>>>> parent of 2b8a2cf (V4-1)
         // 處理報名
         function 處理報名(場地ID) {
             if (!currentUser) {
                 alert('請先登入才能報名場地。');
                 return;
+<<<<<<< HEAD
+>>>>>>> parent of 2b8a2cf (V4-1)
+=======
 >>>>>>> parent of 2b8a2cf (V4-1)
             }
 
@@ -742,6 +759,7 @@ const 場地ID = event.target.dataset.場地id;
                     snapshot.forEach((doc) => {
                         const 場地資料 = doc.data();
 <<<<<<< HEAD
+<<<<<<< HEAD
                         const userGender = 場地資料.男生已報名者?.includes(currentUser.email) ? '男生' : '女生'; // 使用 optional chaining
                         我的報名資料快取.push({ id: doc.id, ...場地資料, gender: userGender });
                        
@@ -758,6 +776,17 @@ const 場地ID = event.target.dataset.場地id;
                         `;
                         報名確認表單內容.appendChild(場地資料項目);
                     });
+=======
+                        const 場地資料項目 = document.createElement('li');
+                        場地資料項目.innerHTML = `
+                            <span>${場地資料.場次}</span>
+                            <span>時間：${場地資料.開始時間} ~ ${場地資料.結束時間}</span>
+                            <span>地點：${場地資料.場地位置}</span>
+                            <button class="btn-secondary cancel-btn" data-場地id="${doc.id}">取消報名</button>
+                        `;
+                        報名確認表單內容.appendChild(場地資料項目);
+                    });
+>>>>>>> parent of 2b8a2cf (V4-1)
                     const 取消報名按鈕們 = document.querySelectorAll('.cancel-btn');
                     取消報名按鈕們.forEach(按鈕 => {
                         按鈕.addEventListener('click', (event) => {
@@ -766,6 +795,9 @@ const 場地ID = event.target.dataset.場地id;
                         });
                     });
                     觸發我的報名篩選();
+<<<<<<< HEAD
+>>>>>>> parent of 2b8a2cf (V4-1)
+=======
 >>>>>>> parent of 2b8a2cf (V4-1)
                 })
                 .catch((error) => {
@@ -774,6 +806,7 @@ const 場地ID = event.target.dataset.場地id;
                 });
         }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
             場地資料.forEach(場地 => {
                  if (場地位置篩選.includes(場地.場地位置.toUpperCase())) {
@@ -827,6 +860,14 @@ const 場地ID = event.target.dataset.場地id;
                 return;
             }
 
+=======
+        function 取消報名(場地ID) {
+            if (!currentUser) {
+                alert('請先登入才能取消報名。');
+                return;
+            }
+
+>>>>>>> parent of 2b8a2cf (V4-1)
             db.collection('場地').doc(場地ID).get()
                 .then((doc) => {
                     if (doc.exists) {
@@ -855,6 +896,9 @@ const 場地ID = event.target.dataset.場地id;
                 }).catch((error) => {
                     console.error('Error getting document:', error);
                     alert('發生錯誤，請重試。');
+<<<<<<< HEAD
+>>>>>>> parent of 2b8a2cf (V4-1)
+=======
 >>>>>>> parent of 2b8a2cf (V4-1)
                 });
         }
