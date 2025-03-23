@@ -272,7 +272,7 @@
                 <form id="場地表單">
                     <div class="form-group">
                         <label for="場次">場次</label>
-                        <select id="場次" name="場次" required>
+                        <select id="場次" name="場次" required style="width: 300px;">
                             <option value="" disabled selected>請選擇場次</option>
                             <option value="男網混排">男網混排</option>
                             <option value="女網混排">女網混排</option>
@@ -282,7 +282,7 @@
                     </div>
                     <div class="form-group">
                         <label for="場地位置">場地位置</label>
-                        <select id="場地位置" name="場地位置" required>
+                        <select id="場地位置" name="場地位置" required style="width: 300px;">
                             <option value="" disabled selected>請選擇場地位置</option>
                             <option value="NVA">NVA</option>
                             <option value="三米線">三米線</option>
@@ -293,31 +293,31 @@
                     </div>
                     <div class="form-group">
                         <label for="費用">費用</label>
-                        <input type="number" id="費用" name="費用" placeholder="請輸入費用" required>
+                        <input type="number" id="費用" name="費用" placeholder="請輸入費用" required style="width: 300px;">
                     </div>
                     <div class="form-group">
                         <label for="日期">日期</label>
-                        <input type="text" id="日期" name="日期" placeholder="YYYY/MM/DD" required>
+                        <input type="text" id="日期" name="日期" placeholder="YYYY/MM/DD" required style="width: 300px;">
                     </div>
                     <div class="form-group">
                         <label for="開始時間">開始時間</label>
-                        <input type="time" id="開始時間" name="開始時間" required>
+                        <input type="text" id="開始時間" name="開始時間" placeholder="HH:MM" required style="width: 300px;">
                     </div>
                     <div class="form-group">
                         <label for="結束時間">結束時間</label>
-                        <input type="time" id="結束時間" name="結束時間" required>
+                        <input type="text" id="結束時間" name="結束時間" placeholder="HH:MM" required style="width: 300px;">
                     </div>
                     <div class="form-group">
                         <label for="男生人數">男生人數</label>
-                        <input type="number" id="男生人數" name="男生人數" placeholder="請輸入男生人數" required>
+                        <input type="number" id="男生人數" name="男生人數" placeholder="請輸入男生人數" required style="width: 300px;">
                     </div>
                     <div class="form-group">
                         <label for="女生人數">女生人數</label>
-                        <input type="number" id="女生人數" name="女生人數" placeholder="請輸入女生人數" required>
+                        <input type="number" id="女生人數" name="女生人數" placeholder="請輸入女生人數" required style="width: 300px;">
                     </div>
                     <div class="form-group">
                         <label for="其他敘述">其他敘述</label>
-                        <textarea id="其他敘述" name="其他敘述" placeholder="請輸入其他敘述"></textarea>
+                        <textarea id="其他敘述" name="其他敘述" placeholder="請輸入其他敘述" style="width: 300px;"></textarea>
                     </div>
                     <button type="submit" class="btn-primary">發布場地</button>
                     <button type="button" class="btn-secondary" id="取消發布">取消</button>
@@ -513,7 +513,7 @@
         // 載入場地資料
         function 載入場地資料() {
             場地列表內容.innerHTML = '';
-            db.collection('場地').get()
+            db.collection('場地').orderBy('日期', 'asc').get() // 依照日期排序
                 .then((snapshot) => {
                     snapshot.forEach((doc) => {
                         const 場地資料 = doc.data();
@@ -666,7 +666,7 @@
             if (!currentUser) return;
 
             報名確認表單內容.innerHTML = '';
-            db.collection('場地').where('已報名者', 'array-contains', currentUser.uid).get()
+            db.collection('場地').where('已報名者', 'array-contains', currentUser.uid).orderBy('日期', 'asc').get()
                 .then((snapshot) => {
                     snapshot.forEach((doc) => {
                         const 場地資料 = doc.data();
@@ -735,7 +735,7 @@
         // 載入場地統計資料 (僅管理員)
         function 載入場地統計資料() {
             管理員後台內容.innerHTML = '';
-            db.collection('場地').get()
+            db.collection('場地').orderBy('日期', 'asc').get()
                 .then((snapshot) => {
                     const 場地統計資料 = {};
                     snapshot.forEach((doc) => {
@@ -750,7 +750,14 @@
                             };
                         }
                         場地統計資料[場地.場地位置].總人數 += 場地.報名人數;
-                        場地統計資料[場地.場地位置].場次.push(場地.場次);
+                        場地統計資料[場地.場地位置].場次.push({
+                            name: 場地.場次,
+                            date: 場地.日期,
+                            maleLimit: 場地.男生人數,
+                            femaleLimit: 場地.女生人數,
+                            maleCount: 0,
+                            femaleCount: 0
+                        });
                         場地統計資料[場地.場地位置].費用加總 += 場地.費用;
 
                         // 計算男生和女生總人數
@@ -760,6 +767,20 @@
                                     場地統計資料[場地.場地位置].男生總人數++;
                                 } else if (場地.已報名者性別[uid] === 'female') {
                                     場地統計資料[場地.場地位置].女生總人數++;
+                                }
+                            }
+                        }
+                        // 計算每個場次的男女生報名人數
+                        場地.已報名者性別
+                        for(const uid in 場地.已報名者性別){
+                            const gender = 場地.已報名者性別[uid];
+                            const targetIndex = 場地統計資料[場地.場地位置].場次.findIndex(item => item.name === 場地.場次 && item.date === 場地.日期);
+                            if(targetIndex !== -1){
+                                if(gender === 'male'){
+                                     場地統計資料[場地.場地位置].場次[targetIndex].maleCount++;
+                                }
+                                else if(gender === 'female'){
+                                     場地統計資料[場地.場地位置].場次[targetIndex].femaleCount++;
                                 }
                             }
                         }
@@ -776,7 +797,7 @@
                             <p>總費用：${場地統計資料[場地位置].費用加總} 元</p>
                             <p>場次：</p>
                             <ul>
-                                ${場地統計資料[場地位置].場次.map(場次 => `<li>${場次}</li>`).join('')}
+                                ${場地統計資料[場地位置].場次.map(場次 => `<li>${場次.name} (${場次.date}) - 男生: ${場次.maleCount}/${場次.maleLimit}, 女生: ${場次.femaleCount}/${場次.femaleLimit}</li>`).join('')}
                             </ul>
                         `;
                         管理員後台內容.appendChild(統計卡片);
