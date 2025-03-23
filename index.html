@@ -263,11 +263,11 @@
                     </div>
                     <div class="form-group">
                         <label for="開始時間">開始時間</label>
-                        <input type="time" id="開始時間" name="開始時間" required>
+                        <input type="text" id="開始時間" name="開始時間" required>
                     </div>
                     <div class="form-group">
                         <label for="結束時間">結束時間</label>
-                        <input type="time" id="結束時間" name="結束時間" required>
+                        <input type="text" id="結束時間" name="結束時間" required>
                     </div>
                     <div class="form-group">
                         <label for="男生人數">男生人數</label>
@@ -523,115 +523,7 @@
                     snapshot.forEach((doc) => {
                         const 場地資料 = doc.data();
                         場地資料快取.push({ id: doc.id, ...場地資料 }); // 將資料存入快取
-                        const 場地卡片 = document.createElement('div');
-                        場地卡片.className = '場地卡片';
-                        場地卡片.innerHTML = `
-                            <h3>${場地資料.場次}</h3>
-                            <p>場地位置：${場地資料.場地位置}</p>
-                            <p>費用：${場地資料.費用} 元</p>
-                            <p>日期：${場地資料.日期}</p>
-                            <p>開始時間：${場地資料.開始時間}</p>
-                            <p>結束時間：${場地資料.結束時間}</p>
-                            <p>男生人數：${場地資料.男生人數} (已報名：<span class="男生已報名人數">${場地資料.男生已報名人數 || 0}</span>)</p>
-                            <p>女生人數：${場地資料.女生人數} (已報名：<span class="女生已報名人數">${場地資料.女生已報名人數 || 0}</span>)</p>
-                            <p>其他敘述：${場地資料.其他敘述}</p>
-                            <p class="報名人數">報名人數：${場地資料.報名人數} / ${場地資料.男生人數 + 場地資料.女生人數}</p>
-                            <div class="actions">
-                                <select class="gender-select">
-                                    <option value="male">男生</option>
-                                    <option value="female">女生</option>
-                                </select>
-                                <button class="btn-primary" data-場地id="${場地資料.id}">我要報名</button>
-                                ${userRole === 'admin' ? `<button class="btn-danger delete-btn" data-場地id="${場地資料.id}">刪除</button>` : ''}
-                            </div>
-                        `;
-                        場地列表內容.appendChild(場地卡片);
                     });
-                    const 報名按鈕們 = document.querySelectorAll('.場地卡片 .btn-primary');
-                    報名按鈕們.forEach(按鈕 => {
-                        按鈕.addEventListener('click', (event) => {
-                            const 場地ID = event.target.dataset.場地id;
-                            const genderSelect = event.target.previousElementSibling;
-                            const gender = genderSelect.value;
-                            if (!currentUser) {
-                                alert('請先登入才能報名場地。');
-                                return;
-                            }
-
-                            db.collection('場地').doc(場地ID).get()
-                                .then(doc => {
-                                    if (!doc.exists) {
-                                        alert('場地不存在。');
-                                        return;
-                                    }
-                                    const 場地資料 = doc.data();
-                                    if (場地資料.已報名者 && 場地資料.已報名者.includes(currentUser.email)) {
-                                        alert('您已報名過此場地。');
-                                        return;
-                                    }
-
-                                    if (場地資料.報名人數 >= 場地資料.男生人數 + 場地資料.女生人數) {
-                                        alert('此場地已額滿。');
-                                        return;
-                                    }
-
-                                      // 檢查性別限制
-                                    let 允許報名 = true;
-                                    if (gender === 'male' && 場地資料.男生已報名人數 >= 場地資料.男生人數) {
-                                        允許報名 = false;
-                                        alert('此場地男生人數已滿。');
-                                    } else if (gender === 'female' && 場地資料.女生已報名人數 >= 場地資料.女生人數) {
-                                        允許報名 = false;
-                                        alert('此場地女生人數已滿。');
-                                    }
-
-                                    if (!允許報名) {
-                                        return;
-                                    }
-                                    let updateData = {
-                                        報名人數: firebase.firestore.FieldValue.increment(1),
-                                        已報名者: firebase.firestore.FieldValue.arrayUnion(currentUser.email)
-                                    }
-                                    if(gender === 'male'){
-                                         updateData["男生已報名人數"] = firebase.firestore.FieldValue.increment(1)
-                                    }
-                                    else{
-                                         updateData["女生已報名人數"] = firebase.firestore.FieldValue.increment(1)
-                                    }
-                                    db.collection('場地').doc(場地ID).update(updateData)
-                                        .then(() => {
-                                            console.log('報名成功');
-                                            alert('報名成功！');
-                                            載入場地資料();
-                                            載入我的報名資料();
-                                        })
-                                        .catch(error => {
-                                            console.error('報名失敗', error);
-                                            alert('報名失敗，請重試。' + error.message);
-                                        });
-                                });
-                        });
-                    });
-
-                    if (userRole === 'admin') {
-                        const 刪除按鈕們 = document.querySelectorAll('.場地卡片 .delete-btn');
-                        刪除按鈕們.forEach(按鈕 => {
-                            按鈕.addEventListener('click', (event) => {
-                                const 場地ID = event.target.dataset.場地id;
-                                db.collection('場地').doc(場地ID).delete()
-                                    .then(() => {
-                                        console.log('場地資訊刪除成功');
-                                        alert('場地資訊刪除成功！');
-                                        載入場地資料();
-                                        載入我的報名資料();
-                                    })
-                                    .catch((error) => {
-                                        console.error('場地資訊刪除失敗', error);
-                                        alert('場地資訊刪除失敗，請重試。' + error.message);
-                                    });
-                            });
-                        });
-                    }
                     已載入場地 = true;
                     顯示場地資料(場地資料快取);
                 })
@@ -652,23 +544,23 @@
                     const 場地卡片 = document.createElement('div');
                     場地卡片.className = '場地卡片';
                     場地卡片.innerHTML = `
-                        <h3>${場地.場次}</h3>
-                        <p>場地位置：${場地.場地位置}</p>
-                        <p>費用：${場地.費用} 元</p>
-                        <p>日期：${場地.日期}</p>
-                        <p>開始時間：${場地.開始時間}</p>
-                        <p>結束時間：${場地.結束時間}</p>
-                        <p>男生人數：${場地.男生人數} (已報名：<span class="男生已報名人數">${場地.男生已報名人數 || 0}</span>)</p>
-                        <p>女生人數：${場地.女生人數} (已報名：<span class="女生已報名人數">${場地.女生已報名人數 || 0}</span>)</p>
-                        <p>其他敘述：${場地.其他敘述}</p>
-                        <p class="報名人數">報名人數：${場地.報名人數} / ${場地.男生人數 + 場地.女生人數}</p>
+                        <h3>${場地資料.場次}</h3>
+                        <p>場地位置：${場地資料.場地位置}</p>
+                        <p>費用：${場地資料.費用} 元</p>
+                        <p>日期：${場地資料.日期}</p>
+                        <p>開始時間：${場地資料.開始時間}</p>
+                        <p>結束時間：${場地資料.結束時間}</p>
+                        <p>男生人數：${場地資料.男生人數} (已報名：<span class="男生已報名人數">${場地資料.男生已報名人數 || 0}</span>)</p>
+                        <p>女生人數：${場地資料.女生人數} (已報名：<span class="女生已報名人數">${場地資料.女生已報名人數 || 0}</span>)</p>
+                        <p>其他敘述：${場地資料.其他敘述}</p>
+                        <p class="報名人數">報名人數：${場地資料.報名人數} / ${場地資料.男生人數 + 場地資料.女生人數}</p>
                         <div class="actions">
                             <select class="gender-select">
                                 <option value="male">男生</option>
                                 <option value="female">女生</option>
                             </select>
-                            <button class="btn-primary" data-場地id="${場地.id}">我要報名</button>
-                            ${userRole === 'admin' ? `<button class="btn-danger delete-btn" data-場地id="${場地.id}">刪除</button>` : ''}
+                            <button class="btn-primary" data-場地id="${場地資料.id}">我要報名</button>
+                            ${userRole === 'admin' ? `<button class="btn-danger delete-btn" data-場地id="${場地資料.id}">刪除</button>` : ''}
                         </div>
                     `;
                     場地列表內容.appendChild(場地卡片);
@@ -707,9 +599,13 @@
                             if (gender === 'male' && 場地資料.男生已報名人數 >= 場地資料.男生人數) {
                                 允許報名 = false;
                                 alert('此場地男生人數已滿。');
-                            } else if (gender === 'female' && 場地資料.女生已報名人數 >= 場地資料.女生人數) {
+                            } else if (gender === 'female' && 場地資料.女生已報名人數 >= 場地資料.女生人數 && 場地資料.女生人數 > 0) {
                                 允許報名 = false;
                                 alert('此場地女生人數已滿。');
+                            }
+                            else if (gender === 'female' && 場地資料.女生人數 == 0){
+                                允許報名 = false;
+                                alert('此場地不收女生。');
                             }
 
                             if (!允許報名) {
@@ -717,14 +613,10 @@
                             }
                             let updateData = {
                                 報名人數: firebase.firestore.FieldValue.increment(1),
-                                已報名者: firebase.firestore.FieldValue.arrayUnion(currentUser.email)
+                                已報名者: firebase.firestore.FieldValue.arrayUnion(currentUser.email),
+                                [gender === 'male' ? '男生已報名人數' : '女生已報名人數']: firebase.firestore.FieldValue.increment(1),
                             }
-                            if(gender === 'male'){
-                                 updateData["男生已報名人數"] = firebase.firestore.FieldValue.increment(1)
-                            }
-                            else{
-                                 updateData["女生已報名人數"] = firebase.firestore.FieldValue.increment(1)
-                            }
+                            const userGender = gender;
                             db.collection('場地').doc(場地ID).update(updateData)
                                 .then(() => {
                                     console.log('報名成功');
@@ -773,50 +665,9 @@
                         const 場地資料 = doc.data();
                         const userGender = 場地資料.男生已報名者?.includes(currentUser.email) ? '男生' : '女生'; // 使用 optional chaining
                         我的報名資料快取.push({ id: doc.id, ...場地資料, gender: userGender });
-                        const listItem = document.createElement('li');
-                        listItem.innerHTML = `
-                            <span>場次：${場地資料.場次}</span>
-                            <span>場地位置：${場地資料.場地位置}</span>
-                            <span>日期：${場地資料.日期}</span>
-                            <span>時間：${場地資料.開始時間} - ${場地資料.結束時間}</span>
-                            <span>性別：${userGender}</span>
-                            <button class="btn-danger cancel-btn" data-場地id="${doc.id}">取消報名</button>
-                        `;
-                        報名確認表單內容.appendChild(listItem);
+                       
                     });
 
-                    const 取消報名按鈕們 = document.querySelectorAll('.cancel-btn');
-                    取消報名按鈕們.forEach(按鈕 => {
-                        按鈕.addEventListener('click', (event) => {
-                            const 場地ID = event.target.dataset.場地id;
-                            db.collection('場地').doc(場地ID).get().then(doc=>{
-                                 const 場地資料 = doc.data();
-                                 const gender = 場地資料.男生已報名者?.includes(currentUser.email)? "男生":"女生"; // 使用 optional chaining
-                                 let updateData = {
-                                    報名人數: firebase.firestore.FieldValue.increment(-1),
-                                    已報名者: firebase.firestore.FieldValue.arrayRemove(currentUser.email)
-                                 }
-                                 if(gender === '男生'){
-                                     updateData["男生已報名人數"] = firebase.firestore.FieldValue.increment(-1)
-                                 }
-                                 else{
-                                     updateData["女生已報名人數"] = firebase.firestore.FieldValue.increment(-1)
-                                 }
-                                 db.collection('場地').doc(場地ID).update(updateData)
-                                    .then(() => {
-                                        console.log('取消報名成功');
-                                        alert('取消報名成功！');
-                                        載入場地資料();
-                                        載入我的報名資料();
-                                    })
-                                    .catch(error => {
-                                        console.error('取消報名失敗', error);
-                                        alert('取消報名失敗，請重試。' + error.message);
-                                    });
-                            })
-
-                        });
-                    });
                     顯示我的報名資料(我的報名資料快取);
                 })
                 .catch(error => {
@@ -839,7 +690,7 @@
                             <span>場地位置：${場地.場地位置}</span>
                             <span>日期：${場地.日期}</span>
                              <span>時間：${場地.開始時間} - ${場地.結束時間}</span>
-                             <span>性別：${userGender}</span>
+                             <span>性別：${場地.gender}</span>
                             <button class="btn-danger cancel-btn" data-場地id="${場地.id}">取消報名</button>
                         `;
                         報名確認表單內容.appendChild(listItem);
