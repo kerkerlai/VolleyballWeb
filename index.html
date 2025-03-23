@@ -1,150 +1,336 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>排球場地報名系統</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #e0f7fa;
+            margin: 0;
+            padding: 0;
         }
-        .hidden {
-            display: none;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1f2937;
+        }
+        .main-content {
+            display: flex;
+            flex-grow: 1;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .section-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .section-container h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #1f2937;
+            text-align: center;
+        }
+        #場地發布表單 {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .form-group textarea {
+            resize: vertical;
+            height: 100px;
+        }
+        .btn-primary {
+            background-color: #6b7280;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #374151;
+        }
+        .btn-secondary {
+            background-color: #e5e7eb;
+            color: #374151;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+            margin-left: 10px;
+        }
+        .btn-secondary:hover {
+            background-color: #d1d5db;
+        }
+        #場地列表內容 {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
         }
         .場地卡片 {
             background-color: white;
             border-radius: 0.5rem;
-            padding: 1.25rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.07);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
         .場地卡片 h3 {
-            font-size: 1.25rem;
-            font-weight: 500;
-            margin-bottom: 0.75rem;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #1f2937;
         }
         .場地卡片 p {
-            font-size: 0.875rem;
-            margin-bottom: 0.5rem;
+            margin-bottom: 5px;
+            color: #4b5563;
         }
-        .場地卡片 ul {
-            list-style-type: disc;
-            margin-left: 1rem;
-            margin-bottom: 0.5rem;
-            font-size: 0.875rem;
+        .報名人數 {
+            font-weight: bold;
+            color: #6b7280;
         }
-        .場地卡片 button {
-            margin-top: 0.75rem;
-            font-size: 0.875rem;
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
         }
-        .場地統計卡片 {
+        #報名確認表單內容 {
+            margin-top: 20px;
+        }
+        #報名確認表單內容 ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        #報名確認表單內容 li {
             background-color: white;
             border-radius: 0.5rem;
-            padding: 1.25rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.07);
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #4b5563;
         }
-        .場地統計卡片 h3 {
+        #報名確認表單內容 li span {
+            font-weight: bold;
+        }
+        #管理員後台內容 {
+            margin-top: 20px;
+        }
+        #管理員後台內容 .場地統計卡片 {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        #管理員後台內容 .場地統計卡片 h3 {
             font-size: 1.25rem;
-            font-weight: 500;
-            margin-bottom: 0.75rem;
+            margin-bottom: 10px;
+            color: #1f2937;
         }
-        .場地統計卡片 p {
-            font-size: 0.875rem;
-            margin-bottom: 0.5rem;
+        #管理員後台內容 .場地統計卡片 p {
+            margin-bottom: 5px;
+            color: #4b5563;
         }
-        .場地統計卡片 ul {
-            list-style-type: disc;
-            margin-left: 1rem;
-            margin-bottom: 0.5rem;
-            font-size: 0.875rem;
+        #管理員後台內容 .場地統計卡片 ul {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+        #管理員後台內容 .場地統計卡片 li {
+            margin-bottom: 5px;
+            color: #4b5563;
+        }
+        .hidden {
+            display: none;
+        }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+        }
+        .alert-success {
+            background-color: #f0fdf4;
+            border: 1px solid #34d399;
+            color: #065f46;
+        }
+        .alert-danger {
+            background-color: #fef2f2;
+            border: 1px solid #f87171;
+            color: #b91c1c;
+        }
+        .filter-options {
+            margin-bottom: 20px;
+        }
+        .filter-options label {
+            margin-right: 10px;
+            color: #1f2937;
+            font-weight: bold;
+        }
+        .filter-options input[type="checkbox"] {
+            margin-right: 5px;
+        }
+        #登入註冊區, #登出註冊區 {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .gender-select {
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-start justify-center py-8">
-    <div class="container max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
-        <h1 class="text-2xl font-semibold text-gray-800 mb-4 text-center">排球場地報名系統</h1>
-        <div id="功能選單" class="mb-4">
-            <button id="報名表單" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">我要報名</button>
-            <button id="報名確認表單" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">我的報名表單</button>
-            <button id="管理員後台" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded hidden">管理員後台</button>
-            <button id="登入" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">登入</button>
-            <button id="登出" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded hidden">登出</button>
-        </div>
-
-        <div id="報名表單內容" class="hidden">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">可報名場地</h2>
-            <div id="場地列表篩選器" class="mb-4 flex flex-wrap gap-2">
-                <label class="inline-flex items-center">
-                    <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded" value="和平排球場">
-                    <span class="ml-2 text-gray-700 text-sm">和平排球場</span>
-                </label>
-                <label class="inline-flex items-center">
-                    <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded" value="中正排球場">
-                    <span class="ml-2 text-gray-700 text-sm">中正排球場</span>
-                </label>
-                <label class="inline-flex items-center">
-                    <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 rounded" value="校本部">
-                    <span class="ml-2 text-gray-700 text-sm">校本部</span>
-                </label>
+<body class="bg-gray-100">
+    <div class="container">
+        <header class="header">
+            <h1>排球場地報名系統</h1>
+        </header>
+        <main class="main-content">
+            <div id="場地發布表單" class="section-container hidden">
+                <h2>發布場地資訊</h2>
+                <form id="場地表單">
+                    <div class="form-group">
+                        <label for="場次">場次</label>
+                        <select id="場次" name="場次" required>
+                            <option value="" disabled selected>請選擇場次</option>
+                            <option value="男網混排">男網混排</option>
+                            <option value="女網混排">女網混排</option>
+                            <option value="純男排">純男排</option>
+                            <option value="純女排">純女排</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="場地位置">場地位置</label>
+                        <select id="場地位置" name="場地位置" required>
+                            <option value="" disabled selected>請選擇場地位置</option>
+                            <option value="NVA">NVA</option>
+                            <option value="三米線">三米線</option>
+                            <option value="藍鵲排球">藍鵲排球</option>
+                            <option value="頭前國中">頭前國中</option>
+                            <option value="612排球星球">612排球星球</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="費用">費用</label>
+                        <input type="number" id="費用" name="費用" placeholder="請輸入費用" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="日期">日期</label>
+                        <input type="text" id="日期" name="日期" placeholder="YYYY/MM/DD" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="開始時間">開始時間</label>
+                        <input type="time" id="開始時間" name="開始時間" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="結束時間">結束時間</label>
+                        <input type="time" id="結束時間" name="結束時間" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="男生人數">男生人數</label>
+                        <input type="number" id="男生人數" name="男生人數" placeholder="請輸入男生人數" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="女生人數">女生人數</label>
+                        <input type="number" id="女生人數" name="女生人數" placeholder="請輸入女生人數" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="其他敘述">其他敘述</label>
+                        <textarea id="其他敘述" name="其他敘述" placeholder="請輸入其他敘述"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">發布場地</button>
+                    <button type="button" class="btn-secondary" id="取消發布">取消</button>
+                </form>
             </div>
-            <div id="場地列表內容">
-                <p class="text-gray-500 text-sm">載入場地資料中...</p>
-            </div>
-        </div>
-
-        <div id="報名確認表單內容" class="hidden">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">我的報名表單</h2>
-            <div id="我的報名篩選器" class="mb-4 flex flex-wrap gap-2">
-                <label class="inline-flex items-center">
-                    <input type="checkbox" class="form-checkbox h-5 w-5 text-green-600 rounded" value="和平排球場">
-                    <span class="ml-2 text-gray-700 text-sm">和平排球場</span>
-                </label>
-                <label class="inline-flex items-center">
-                    <input type="checkbox" class="form-checkbox h-5 w-5 text-green-600 rounded" value="中正排球場">
-                    <span class="ml-2 text-gray-700 text-sm">中正排球場</span>
-                </label>
-                 <label class="inline-flex items-center">
-                    <input type="checkbox" class="form-checkbox h-5 w-5 text-green-600 rounded" value="校本部">
-                    <span class="ml-2 text-gray-700 text-sm">校本部</span>
-                </label>
-            </div>
-            <ul>
-                <li class="text-gray-500 text-sm">載入報名資料中...</li>
-            </ul>
-        </div>
-
-        <div id="管理員後台內容" class="hidden">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">場地統計資料</h2>
-            <div class="text-gray-500 text-sm">載入場地統計資料中...</div>
-        </div>
-
-        <div id="登入表單" class="hidden">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">登入</h2>
-            <form id="登入表單內容" class="space-y-4">
-                <div>
-                    <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email:</label>
-                    <input type="email" id="email" name="email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <div id="場地列表" class="section-container">
+                <h2>可報名場地</h2>
+                <div class="filter-options">
+                    <label>篩選場地位置：</label>
+                    <input type="checkbox" id="filter-nva" value="NVA" checked> <label for="filter-nva">NVA</label>
+                    <input type="checkbox" id="filter-sanm" value="三米線" checked> <label for="filter-sanm">三米線</label>
+                    <input type="checkbox" id="filter-lanque" value="藍鵲排球" checked> <label for="filter-lanque">藍鵲排球</label>
+                    <input type="checkbox" id="filter-touqian" value="頭前國中" checked> <label for="filter-touqian">頭前國中</label>
+                    <input type="checkbox" id="filter-612" value="612排球星球" checked> <label for="filter-612">612排球星球</label>
                 </div>
-                <div>
-                    <label for="password" class="block text-gray-700 text-sm font-bold mb-2">密碼:</label>
-                    <input type="password" id="password" name="password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <div id="場地列表內容">
                 </div>
-                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline text-sm">登入</button>
-            </form>
-            <div id="登入錯誤訊息" class="text-red-500 text-xs italic mt-4" style="display: none;"></div>
-        </div>
+            </div>
+            <div id="報名確認表單" class="section-container">
+                <h2>我的報名表單</h2>
+                <div class="filter-options">
+                    <label>篩選場地位置：</label>
+                    <input type="checkbox" id="filter-my-nva" value="NVA" checked> <label for="filter-my-nva">NVA</label>
+                    <input type="checkbox" id="filter-my-sanm" value="三米線" checked> <label for="filter-my-sanm">三米線</label>
+                    <input type="checkbox" id="filter-my-lanque" value="藍鵲排球" checked> <label for="filter-my-lanque">藍鵲排球</label>
+                    <input type="checkbox" id="filter-my-touqian" value="頭前國中" checked> <label for="filter-my-touqian">頭前國中</label>
+                    <input type="checkbox" id="filter-my-612" value="612排球星球" checked> <label for="filter-my-612">612排球星球</label>
+                </div>
+                <ul id="報名確認表單內容">
+                </ul>
+            </div>
+            <div id="管理員後台" class="section-container hidden">
+                <h2>管理員後台</h2>
+                <div id="管理員後台內容">
+                </div>
+            </div>
+        </main>
+        <footer id="登入註冊區" class="">
+            <button id="登入按鈕" class="btn-primary">登入 / 註冊</button>
+        </footer>
+        <footer id="登出註冊區" class="hidden">
+            <button id="登出按鈕" class="btn-primary">登出</button>
+        </footer>
     </div>
-
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script>
-        // Firebase 設定
+        // Firebase 相關設定 (請替換成您的 Firebase 配置)
         const firebaseConfig = {
             apiKey: "AIzaSyB8PzKSCgIl0_JIVxetSK3Lujwpqr-eEJA",
             authDomain: "volleyballweb-6476a.firebaseapp.com",
@@ -154,139 +340,180 @@
             appId: "1:107455998937:web:1203dc9377ccf38a2547c8",
             measurementId: "G-1J504YXCHY"
         };
+        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // 頁面元素
-        const 功能選單 = document.getElementById('功能選單');
-        const 報名表單按鈕 = document.getElementById('報名表單');
-        const 報名確認表單按鈕 = document.getElementById('報名確認表單');
-        const 管理員後台按鈕 = document.getElementById('管理員後台');
-        const 登入按鈕 = document.getElementById('登入');
-        const 登出按鈕 = document.getElementById('登出');
-        const 報名表單內容 = document.getElementById('報名表單內容');
-        const 場地列表內容 = document.getElementById('場地列表內容');
-        const 場地列表篩選器 = {
-            和平: document.querySelector('input[value="和平排球場"]'),
-            中正: document.querySelector('input[value="中正排球場"]'),
-            校本部: document.querySelector('input[value="校本部"]')
-        };
-        const 報名確認表單內容 = document.getElementById('報名確認表單內容');
-        const 我的報名篩選器 = {
-            和平: document.querySelector('input[value="和平排球場"]'),
-            中正: document.querySelector('input[value="中正排球場"]'),
-            校本部: document.querySelector('input[value="校本部"]')
-        };
-        const 管理員後台內容 = document.getElementById('管理員後台內容');
-        const 登入表單 = document.getElementById('登入表單');
-        const 登入表單內容 = document.getElementById('登入表單內容');
-        const 登入錯誤訊息 = document.getElementById('登入錯誤訊息');
-
         let currentUser = null;
-        let userRole = 'user'; // 預設為一般使用者
+        let userRole = 'user';
+        const adminEmails = ['kerkerlai@gmail.com', 'admin2@example.com'];
 
-        // 顯示/隱藏頁面
-        function showPage(pageId) {
-            報名表單內容.classList.add('hidden');
-            報名確認表單內容.classList.add('hidden');
-            管理員後台內容.classList.add('hidden');
-            登入表單.classList.add('hidden');
-            document.getElementById(pageId).classList.remove('hidden');
-        }
+        // HTML 元素
+        const 場地表單 = document.getElementById('場地表單');
+        const 場地列表內容 = document.getElementById('場地列表內容');
+        const 報名確認表單內容 = document.getElementById('報名確認表單內容');
+        const 管理員後台內容 = document.getElementById('管理員後台內容');
+        const 場地發布表單 = document.getElementById('場地發布表單');
+        const 管理員後台 = document.getElementById('管理員後台');
+        const 報名確認表單 = document.getElementById('報名確認表單');
+        const 登入註冊區 = document.getElementById('登入註冊區');
+        const 登入按鈕 = document.getElementById('登入按鈕');
+        const 登出註冊區 = document.getElementById('登出註冊區');
+        const 登出按鈕 = document.getElementById('登出按鈕');
+        const 取消發布按鈕 = document.getElementById('取消發布');
+
+        // 篩選器元素
+        const 場地列表篩選器 = {
+            nva: document.getElementById('filter-nva'),
+            sanm: document.getElementById('filter-sanm'),
+            lanque: document.getElementById('filter-lanque'),
+            touqian: document.getElementById('filter-touqian'),
+            liu12: document.getElementById('filter-612'),
+        };
+        const 我的報名篩選器 = {
+            nva: document.getElementById('filter-my-nva'),
+            sanm: document.getElementById('filter-my-sanm'),
+            lanque: document.getElementById('filter-my-lanque'),
+            touqian: document.getElementById('filter-my-touqian'),
+            liu12: document.getElementById('filter-my-612'),
+        };
+
+        // 登入/註冊事件
+        登入按鈕.addEventListener('click', () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    currentUser = result.user;
+                    console.log('登入成功', currentUser);
+                    checkUserRole();
+                })
+                .catch((error) => {
+                    console.error('登入失敗', error);
+                    alert('登入失敗，請重試。' + error.message);
+                });
+        });
+
+        // 登出事件
+        登出按鈕.addEventListener('click', () => {
+            auth.signOut()
+                .then(() => {
+                    currentUser = null;
+                    userRole = 'user';
+                    console.log('登出成功');
+                    updateUI();
+                })
+                .catch((error) => {
+                    console.error('登出失敗', error);
+                    alert('登出失敗，請重試。' + error.message);
+                });
+        });
 
         // 檢查使用者角色
         function checkUserRole() {
             if (currentUser) {
-                const userRef = db.collection('users').doc(currentUser.uid);
-                userRef.get().then((doc) => {
-                    if (doc.exists) {
-                        userRole = doc.data().role;
-                        if (userRole === 'admin') {
-                            管理員後台按鈕.classList.remove('hidden');
-                            載入場地統計資料();
-                        } else {
-                            管理員後台按鈕.classList.add('hidden');
-                        }
-                        登入按鈕.classList.add('hidden');
-                        登出按鈕.classList.remove('hidden');
-                        功能選單.querySelectorAll('button').forEach(button => button.disabled = false);
-                        if (!已載入場地) 載入場地資料();
-                        if (!已載入我的報名) 載入我的報名資料();
-                    } else {
-                        // 如果找不到使用者文件，則視為一般使用者
-                        userRole = 'user';
-                        管理員後台按鈕.classList.add('hidden');
-                        登入按鈕.classList.remove('hidden');
-                        登出按鈕.classList.add('hidden');
-                        功能選單.querySelectorAll('button').forEach(button => button.disabled = false);
-                        if (!已載入場地) 載入場地資料();
-                        if (!已載入我的報名) 載入我的報名資料();
-                    }
-                }).catch((error) => {
-                    console.error("Error getting user role:", error);
-                    alert("Error getting user role. Please try again.");
-                });
+                if (adminEmails.includes(currentUser.email)) {
+                    userRole = 'admin';
+                } else {
+                    userRole = 'user';
+                }
+                updateUI();
             } else {
-                userRole = 'user';
-                管理員後台按鈕.classList.add('hidden');
-                登入按鈕.classList.remove('hidden');
-                登出按鈕.classList.add('hidden');
-                功能選單.querySelectorAll('button').forEach(button => button.disabled = true);
-                登入按鈕.disabled = false;
-                showPage('登入表單');
+                updateUI();
             }
         }
 
-        // 登入
-        登入表單內容.addEventListener('submit', (event) => {
-            event.preventDefault();
-            const email = event.target.email.value;
-            const password = event.target.password.value;
+        // 更新 UI
+        function updateUI() {
+            登入註冊區.classList.toggle('hidden', !!currentUser);
+            登出註冊區.classList.toggle('hidden', !currentUser);
+            場地發布表單.classList.toggle('hidden', userRole !== 'admin');
+            管理員後台.classList.toggle('hidden', userRole !== 'admin');
+            報名確認表單.classList.toggle('hidden', !currentUser);
 
-            auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    currentUser = userCredential.user;
-                    checkUserRole();
+            // 根據使用者角色顯示相應的區塊
+            if (userRole === 'admin') {
+                場地發布表單.classList.remove('hidden');
+                場地列表.classList.remove('hidden');
+                報名確認表單.classList.remove('hidden');
+                管理員後台.classList.remove('hidden');
+            } else {
+                場地發布表單.classList.add('hidden');
+                場地列表.classList.remove('hidden');
+                報名確認表單.classList.remove('hidden');
+                管理員後台.classList.add('hidden');
+            }
+
+            if (currentUser) {
+                載入場地資料();
+                載入我的報名資料();
+                if (userRole === 'admin') {
+                    載入場地統計資料();
+                }
+            } else {
+                場地列表內容.innerHTML = '';
+                報名確認表單內容.innerHTML = '';
+                管理員後台內容.innerHTML = '';
+            }
+        }
+
+        // 表單提交事件
+        場地表單.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const 場次 = document.getElementById('場次').value;
+            const 場地位置 = document.getElementById('場地位置').value;
+            const 費用 = parseInt(document.getElementById('費用').value);
+            const 日期 = document.getElementById('日期').value;
+            const 開始時間 = document.getElementById('開始時間').value;
+            const 結束時間 = document.getElementById('結束時間').value;
+            const 男生人數 = parseInt(document.getElementById('男生人數').value);
+            const 女生人數 = parseInt(document.getElementById('女生人數').value);
+            const 其他敘述 = document.getElementById('其他敘述').value;
+
+            if (!場次 || !場地位置 || isNaN(費用) || !日期 || !開始時間 || !結束時間 || isNaN(男生人數) || isNaN(女生人數)) {
+                alert('請填寫所有必填欄位。');
+                return;
+            }
+
+            db.collection('場地').add({
+                場次: 場次,
+                場地位置: 場地位置,
+                費用: 費用,
+                日期: 日期,
+                開始時間: 開始時間,
+                結束時間: 結束時間,
+                男生人數: 男生人數,
+                女生人數: 女生人數,
+                其他敘述: 其他敘述,
+                報名人數: 0,
+                已報名者: [],
+                已報名者性別: {} // 新增：儲存已報名者性別
+            })
+                .then(() => {
+                    console.log('場地資訊發布成功');
+                    alert('場地資訊發布成功！');
+                    場地表單.reset();
+                    載入場地資料();
                 })
                 .catch((error) => {
-                    登入錯誤訊息.textContent = error.message;
-                    登入錯誤訊息.style.display = 'block';
+                    console.error('場地資訊發布失敗', error);
+                    alert('場地資訊發布失敗，請重試。' + error.message);
                 });
         });
 
-        // 登出
-        登出按鈕.addEventListener('click', () => {
-            auth.signOut().then(() => {
-                currentUser = null;
-                userRole = 'user';
-                管理員後台按鈕.classList.add('hidden');
-                登入按鈕.classList.remove('hidden');
-                登出按鈕.classList.add('hidden');
-                功能選單.querySelectorAll('button').forEach(button => button.disabled = true);
-                登入按鈕.disabled = false;
-                showPage('登入表單');
-                場地列表內容.innerHTML = '<p class="text-gray-500 text-sm">請先登入以查看場地資料。</p>';
-                報名確認表單內容.innerHTML = '<p class="text-gray-500 text-sm">請先登入以查看報名資料。</p>';
-            }).catch((error) => {
-                console.error('登出失敗', error);
-                alert('登出失敗，請重試。' + error.message);
-            });
+        // 取消發布按鈕事件
+        取消發布按鈕.addEventListener('click', () => {
+            場地表單.reset();
         });
 
-        // 功能選單事件
-        報名表單按鈕.addEventListener('click', () => showPage('報名表單內容'));
-        報名確認表單按鈕.addEventListener('click', () => showPage('報名確認表單內容'));
-        管理員後台按鈕.addEventListener('click', () => showPage('管理員後台內容'));
-        登入按鈕.addEventListener('click', () => showPage('登入表單'));
-
         let 已載入場地 = false;
+
         // 載入場地資料
         function 載入場地資料() {
-            場地列表內容.innerHTML = '<p class="text-gray-500 text-sm">載入場地資料中...</p>';
+            場地列表內容.innerHTML = '';
             db.collection('場地').get()
                 .then((snapshot) => {
-                    場地列表內容.innerHTML = '';
                     snapshot.forEach((doc) => {
                         const 場地資料 = doc.data();
                         const 場地卡片 = document.createElement('div');
@@ -294,27 +521,35 @@
                         場地卡片.innerHTML = `
                             <h3>${場地資料.場次}</h3>
                             <p>場地位置：${場地資料.場地位置}</p>
-                            <p>日期：${場地資料.日期}</p>
-                            <p>時間：${場地資料.開始時間} - ${場地資料.結束時間}</p>
                             <p>費用：${場地資料.費用} 元</p>
-                            <p>
-                                性別限制：
-                                <label><input type="radio" name="gender-${doc.id}" value="male"> 男</label>
-                                <label><input type="radio" name="gender-${doc.id}" value="female"> 女</label>
-                            </p>
-                            <p>報名人數：${場地資料.報名人數} / ${場地資料.男生人數 + 場地資料.女生人數}</p>
-                            <button class="btn-primary bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm" data-場地id="${doc.id}">我要報名</button>
-                            ${userRole === 'admin' ? `<button type="button" class="btn-secondary bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded text-sm" data-場地id="${doc.id}">取消場地</button>` : ''}
+                            <p>日期：${場地資料.日期}</p>
+                            <p>開始時間：${場地資料.開始時間}</p>
+                            <p>結束時間：${場地資料.結束時間}</p>
+                            <p>男生人數：${場地資料.男生人數}</p>
+                            <p>女生人數：${場地資料.女生人數}</p>
+                            <p>其他敘述：${場地資料.其他敘述}</p>
+                            <p class="報名人數">報名人數：${場地資料.報名人數} / ${場地資料.男生人數 + 場地資料.女生人數}</p>
+                            <div class="actions">
+                                <div class="gender-select">
+                                    <label>您的性別：</label>
+                                    <input type="radio" name="gender-${doc.id}" value="male" required> 男
+                                    <input type="radio" name="gender-${doc.id}" value="female" required> 女
+                                </div>
+                                <button class="btn-primary" data-場地id="${doc.id}">我要報名</button>
+                                ${userRole === 'admin' ? `<button type="button" class="btn-secondary" data-場地id="${doc.id}">取消場地</button>` : ''}
+                            </div>
                         `;
                         場地列表內容.appendChild(場地卡片);
 
                         // 篩選器事件
                         Object.entries(場地列表篩選器).forEach(([key, filter]) => {
                             filter.addEventListener('change', () => {
+                                // 修正：使用textContent獲取場地位置，並使用includes進行比較
+                                const 場地位置文字 = 場地卡片.querySelector('p:nth-of-type(1)').textContent;
                                 if (filter.checked) {
                                     場地卡片.classList.remove('hidden');
                                 } else {
-                                    if (!場地卡片.querySelector(`p:nth-of-type(2)`).textContent.includes(filter.value)) {
+                                    if (!場地位置文字.includes(filter.value)) {
                                         場地卡片.classList.add('hidden');
                                     }
                                 }
@@ -434,31 +669,33 @@
                         const 報名項目 = document.createElement('li');
                         const 性別 = 場地資料.已報名者性別[currentUser.uid]; // 取得報名者的性別
                         報名項目.innerHTML = `
-                            <span class="text-sm">場次：${場地資料.場次}</span>
-                            <span class="text-sm">場地位置：${場地資料.場地位置}</span>
-                            <span class="text-sm">日期：${場地資料.日期}</span>
-                            <span class="text-sm">時間：${場地資料.開始時間} - ${場地資料.結束時間}</span>
-                            <span class="text-sm">您的性別：${性別 === 'male' ? '男' : '女'}</span>
-                            <button class="btn-secondary bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded text-sm" data-場地id="${doc.id}">取消報名</button>
+                            <span>場次：${場地資料.場次}</span>
+                            <span>場地位置：${場地資料.場地位置}</span>
+                            <span>日期：${場地資料.日期}</span>
+                            <span>時間：${場地資料.開始時間} - ${場地資料.結束時間}</span>
+                            <span>您的性別：${性別 === 'male' ? '男' : '女'}</span>
+                            <button class="btn-secondary" data-場地id="${doc.id}">取消報名</button>
                         `;
                         報名確認表單內容.appendChild(報名項目);
 
-                         // 篩選器事件
+                        // 篩選器事件
                         Object.entries(我的報名篩選器).forEach(([key, filter]) => {
                             filter.addEventListener('change', () => {
                                 if (filter.checked) {
-                                     報名項目.classList.remove('hidden');
+                                    報名項目.classList.remove('hidden');
                                 } else {
-                                     if (!報名項目.querySelector(`span:nth-of-type(2)`).textContent.includes(filter.value)) {
-                                         報名項目.classList.add('hidden');
-                                     }
+                                     // 修正：使用textContent獲取場地位置，並使用includes進行比較
+                                    const 場地位置文字 = 報名項目.querySelector('span:nth-of-type(2)').textContent;
+                                    if (!場地位置文字.includes(filter.value)) {
+                                        報名項目.classList.add('hidden');
+                                    }
                                 }
                             });
                         });
 
                         // "取消報名" 按鈕事件
                         const 取消報名按鈕 = 報名項目.querySelector('.btn-secondary');
-                        取消報名按鈕.addEventListener('click', ()=> {
+                        取消報名按鈕.addEventListener('click', () => {
                             const 場地id = 取消報名按鈕.dataset.場地id;
                             if (confirm('確定要取消報名嗎？')) {
                                 db.collection('場地').doc(場地id).get()
@@ -530,12 +767,12 @@
                         const 統計卡片 = document.createElement('div');
                         統計卡片.className = '場地統計卡片';
                         統計卡片.innerHTML = `
-                            <h3 class="text-lg font-semibold text-gray-800 mb-2">${場地位置}</h3>
-                            <p class="text-sm text-gray-700 mb-1">總報名人數：${場地統計資料[場地位置].總人數}</p>
-                            <p class="text-sm text-gray-700 mb-1">總費用：${場地統計資料[場地位置].費用加總} 元</p>
-                            <p class="text-sm text-gray-700 mb-1">場次：</p>
-                            <ul class="list-disc list-inside">
-                                ${場地統計資料[場地位置].場次.map(場次 => `<li class="text-sm text-gray-700">${場次}</li>`).join('')}
+                            <h3>${場地位置}</h3>
+                            <p>總報名人數：${場地統計資料[場地位置].總人數}</p>
+                            <p>總費用：${場地統計資料[場地位置].費用加總} 元</p>
+                            <p>場次：</p>
+                            <ul>
+                                ${場地統計資料[場地位置].場次.map(場次 => `<li>${場次}</li>`).join('')}
                             </ul>
                         `;
                         管理員後台內容.appendChild(統計卡片);
