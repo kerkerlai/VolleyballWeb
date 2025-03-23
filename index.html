@@ -12,7 +12,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #e0f7fa;
+            background-color: #f0f4f8; /* 淡灰色背景 */
             margin: 0;
             padding: 0;
         }
@@ -26,120 +26,141 @@
         }
         .header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
         .header h1 {
-            font-size: 2rem;
+            font-size: 2.25rem; /* 增大字體 */
             font-weight: bold;
-            color: #1f2937;
+            color: #0f172a; /* 深色標題 */
         }
         .main-content {
             display: flex;
             flex-grow: 1;
             overflow: hidden;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
         .section-container {
             flex: 1;
-            padding: 20px;
+            padding: 30px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
         }
         .section-container h2 {
-            font-size: 1.5rem;
+            font-size: 1.875rem; /* 增大字體 */
             font-weight: bold;
-            margin-bottom: 20px;
-            color: #1f2937;
+            margin-bottom: 25px;
+            color: #0f172a; /* 深色標題 */
             text-align: center;
         }
         #場地發布表單 {
             background-color: white;
-            border-radius: 0.5rem;
-            padding: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            margin-bottom: 20px;
+            border-radius: 0.75rem; /* 更圓潤的邊角 */
+            padding: 30px;
+            box-shadow: 0 6px 10px -2px rgba(0, 0, 0, 0.15), 0 3px 7px -2px rgba(0, 0, 0, 0.07); /* 更柔和的陰影 */
+            margin-bottom: 30px;
+            border: 1px solid #e0e6ed; /* 增加邊框 */
         }
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #1f2937;
+            margin-bottom: 8px;
+            font-weight: 600; /* 使用 600 字重 */
+            color: #1e293b; /* 更深的標籤顏色 */
         }
         .form-group input, .form-group select, .form-group textarea {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
+            border-radius: 0.5rem; /* 更圓潤的邊角 */
             font-size: 1rem;
             box-sizing: border-box;
+            transition: border-color 0.2s ease; /* 平滑過渡效果 */
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6; /* 聚焦時的邊框顏色 */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); /* 添加焦點陰影 */
         }
         .form-group textarea {
             resize: vertical;
-            height: 100px;
+            height: 120px; /* 增加高度 */
         }
         .btn-primary {
-            background-color: #6b7280;
+            background-color: #3b82f6; /* 藍色主色 */
             color: white;
-            padding: 10px 20px;
+            padding: 12px 25px;
             border: none;
-            border-radius: 0.375rem;
+            border-radius: 0.5rem; /* 更圓潤的邊角 */
             cursor: pointer;
             font-size: 1rem;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease; /* 添加變形效果 */
         }
         .btn-primary:hover {
-            background-color: #374151;
+            background-color: #2563eb; /* 深藍色懸停效果 */
+            transform: translateY(-2px); /* 向上微移 */
+        }
+        .btn-primary:active {
+            transform: translateY(0); /* 按下時取消位移 */
         }
         .btn-secondary {
             background-color: #e5e7eb;
             color: #374151;
-            padding: 10px 20px;
+            padding: 12px 25px;
             border: none;
-            border-radius: 0.375rem;
+            border-radius: 0.5rem; /* 更圓潤的邊角 */
             cursor: pointer;
             font-size: 1rem;
-            transition: background-color 0.3s ease;
-            margin-left: 10px;
+            transition: background-color 0.3s ease, transform 0.2s ease; /* 添加變形效果 */
+            margin-left: 15px;
         }
         .btn-secondary:hover {
             background-color: #d1d5db;
+            transform: translateY(-2px); /* 向上微移 */
+        }
+        .btn-secondary:active {
+            transform: translateY(0); /* 按下時取消位移 */
         }
         #場地列表內容 {
-            margin-top: 20px;
+            margin-top: 30px;
             display: flex;
             flex-direction: column;
         }
         .場地卡片 {
             background-color: white;
-            border-radius: 0.5rem;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-radius: 0.75rem; /* 更圓潤的邊角 */
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 6px 10px -2px rgba(0, 0, 0, 0.15), 0 3px 7px -2px rgba(0, 0, 0, 0.07); /* 更柔和的陰影 */
+            transition: transform 0.2s ease, box-shadow 0.2s ease; /* 添加變形和陰影過渡 */
+            border: 1px solid #e0e6ed; /* 增加邊框 */
+        }
+        .場地卡片:hover {
+            transform: translateY(-4px); /* 向上微移 */
+            box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 8px -3px rgba(0, 0, 0, 0.05); /* 稍微增加陰影 */
         }
         .場地卡片 h3 {
             font-size: 1.5rem;
-            margin-bottom: 10px;
-            color: #1f2937;
+            margin-bottom: 15px;
+            color: #0f172a; /* 深色標題 */
         }
         .場地卡片 p {
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             color: #4b5563;
         }
         .報名人數 {
-            font-weight: bold;
+            font-weight: 600; /* 使用 600 字重 */
             color: #6b7280;
         }
         .actions {
             display: flex;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 15px;
+            margin-top: 20px;
         }
         #報名確認表單內容 {
-            margin-top: 20px;
+            margin-top: 30px;
         }
         #報名確認表單內容 ul {
             list-style-type: none;
@@ -147,44 +168,51 @@
         }
         #報名確認表單內容 li {
             background-color: white;
-            border-radius: 0.5rem;
-            padding: 15px;
-            margin-bottom: 10px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-radius: 0.75rem; /* 更圓潤的邊角 */
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 10px -2px rgba(0, 0, 0, 0.15), 0 3px 7px -2px rgba(0, 0, 0, 0.07); /* 更柔和的陰影 */
             display: flex;
             justify-content: space-between;
             align-items: center;
             color: #4b5563;
+            border: 1px solid #e0e6ed; /* 增加邊框 */
+            transition: transform 0.2s ease, box-shadow 0.2s ease; /* 添加變形和陰影過渡 */
+        }
+        #報名確認表單內容 li:hover {
+            transform: translateY(-2px); /* 向上微移 */
+            box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 8px -3px rgba(0, 0, 0, 0.05); /* 稍微增加陰影 */
         }
         #報名確認表單內容 li span {
-            font-weight: bold;
+            font-weight: 600; /* 使用 600 字重 */
         }
         #管理員後台內容 {
-            margin-top: 20px;
+            margin-top: 30px;
         }
         #管理員後台內容 .場地統計卡片 {
             background-color: white;
-            border-radius: 0.5rem;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-radius: 0.75rem; /* 更圓潤的邊角 */
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 6px 10px -2px rgba(0, 0, 0, 0.15), 0 3px 7px -2px rgba(0, 0, 0, 0.07); /* 更柔和的陰影 */
+            border: 1px solid #e0e6ed; /* 增加邊框 */
         }
         #管理員後台內容 .場地統計卡片 h3 {
             font-size: 1.25rem;
-            margin-bottom: 10px;
-            color: #1f2937;
+            margin-bottom: 15px;
+            color: #0f172a; /* 深色標題 */
         }
         #管理員後台內容 .場地統計卡片 p {
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             color: #4b5563;
         }
         #管理員後台內容 .場地統計卡片 ul {
             list-style-type: none;
             padding: 0;
-            margin-top: 10px;
+            margin-top: 15px;
         }
         #管理員後台內容 .場地統計卡片 li {
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             color: #4b5563;
         }
         .hidden {
@@ -207,24 +235,29 @@
             color: #b91c1c;
         }
         .filter-options {
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
         .filter-options label {
-            margin-right: 10px;
+            margin-right: 15px;
             color: #1f2937;
-            font-weight: bold;
+            font-weight: 600; /* 使用 600 字重 */
         }
         .filter-options input[type="checkbox"] {
-            margin-right: 5px;
+            margin-right: 8px;
         }
         #登入註冊區, #登出註冊區 {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 30px;
         }
         .gender-select {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             align-items: center;
+            margin-top: 10px;
+        }
+        .gender-select label {
+            font-weight: 600;
+            color: #1e293b;
         }
     </style>
 </head>
@@ -493,8 +526,8 @@
                             <p>日期：${場地資料.日期}</p>
                             <p>開始時間：${場地資料.開始時間}</p>
                             <p>結束時間：${場地資料.結束時間}</p>
-                            <p>男生人數：${場地資料.男生人數}</p>
-                            <p>女生人數：${場地資料.女生人數}</p>
+                            <p>男生人數：${場地資料.男生人數} (已報名：<span class="已報名男生人數">0</span>)</p>
+                            <p>女生人數：${場地資料.女生人數} (已報名：<span class="已報名女生人數">0</span>)</p>
                             <p>其他敘述：${場地資料.其他敘述}</p>
                             <p class="報名人數">報名人數：${場地資料.報名人數} / ${場地資料.男生人數 + 場地資料.女生人數}</p>
                             <div class="actions">
@@ -508,6 +541,24 @@
                             </div>
                         `;
                         場地列表內容.appendChild(場地卡片);
+
+                        // 更新已報名人數
+                        const 已報名男生人數Span = 場地卡片.querySelector('.已報名男生人數');
+                        const 已報名女生人數Span = 場地卡片.querySelector('.已報名女生人數');
+
+                        let 已報名男生人數 = 0;
+                        let 已報名女生人數 = 0;
+                        if(場地資料.已報名者性別){
+                           for (const uid in 場地資料.已報名者性別) {
+                              if (場地資料.已報名者性別[uid] === 'male') {
+                                  已報名男生人數++;
+                              } else if (場地資料.已報名者性別[uid] === 'female') {
+                                  已報名女生人數++;
+                              }
+                           }
+                        }
+                        已報名男生人數Span.textContent = 已報名男生人數;
+                        已報名女生人數Span.textContent = 已報名女生人數;
 
                         // "我要報名" 按鈕事件
                         const 報名按鈕 = 場地卡片.querySelector('.btn-primary');
@@ -537,11 +588,11 @@
                                                 return;
                                             }
 
-                                             // 檢查性別限制
+                                            // 檢查性別限制
                                             let 符合性別限制 = false;
-                                            if (性別 === 'male' && 場地資料.男生人數 > 0) {
+                                            if (性別 === 'male' && 場地資料.男生人數 > 已報名男生人數) {
                                                 符合性別限制 = true;
-                                            } else if (性別 === 'female' && 場地資料.女生人數 > 0) {
+                                            } else if (性別 === 'female' && 場地資料.女生人數 > 已報名女生人數) {
                                                 符合性別限制 = true;
                                             }
 
@@ -620,13 +671,13 @@
                     snapshot.forEach((doc) => {
                         const 場地資料 = doc.data();
                         const 報名項目 = document.createElement('li');
-                         const 性別 = 場地資料.已報名者性別[currentUser.uid]; // 取得報名者的性別
+                        const 性別 = 場地資料.已報名者性別[currentUser.uid]; // 取得報名者的性別
                         報名項目.innerHTML = `
                             <span>場次：${場地資料.場次}</span>
                             <span>場地位置：${場地資料.場地位置}</span>
                             <span>日期：${場地資料.日期}</span>
                             <span>時間：${場地資料.開始時間} - ${場地資料.結束時間}</span>
-                            <span>您的性別：${性別 === 'male' ? '男' : '女'}</span>
+                             <span>您的性別：${性別 === 'male' ? '男' : '女'}</span>
                             <button class="btn-secondary" data-場地id="${doc.id}">取消報名</button>
                         `;
                         報名確認表單內容.appendChild(報名項目);
@@ -693,12 +744,25 @@
                             場地統計資料[場地.場地位置] = {
                                 總人數: 0,
                                 場次: [],
-                                費用加總: 0
+                                費用加總: 0,
+                                男生總人數: 0,  // 新增：男生總人數
+                                女生總人數: 0    // 新增：女生總人數
                             };
                         }
                         場地統計資料[場地.場地位置].總人數 += 場地.報名人數;
                         場地統計資料[場地.場地位置].場次.push(場地.場次);
-                         場地統計資料[場地.場地位置].費用加總 += 場地.費用;
+                        場地統計資料[場地.場地位置].費用加總 += 場地.費用;
+
+                        // 計算男生和女生總人數
+                        if (場地.已報名者性別) {
+                            for (const uid in 場地.已報名者性別) {
+                                if (場地.已報名者性別[uid] === 'male') {
+                                    場地統計資料[場地.場地位置].男生總人數++;
+                                } else if (場地.已報名者性別[uid] === 'female') {
+                                    場地統計資料[場地.場地位置].女生總人數++;
+                                }
+                            }
+                        }
                     });
 
                     for (const 場地位置 in 場地統計資料) {
@@ -707,6 +771,8 @@
                         統計卡片.innerHTML = `
                             <h3>${場地位置}</h3>
                             <p>總報名人數：${場地統計資料[場地位置].總人數}</p>
+                            <p>男生總人數：${場地統計資料[場地位置].男生總人數}</p>
+                            <p>女生總人數：${場地統計資料[場地位置].女生總人數}</p>
                             <p>總費用：${場地統計資料[場地位置].費用加總} 元</p>
                             <p>場次：</p>
                             <ul>
