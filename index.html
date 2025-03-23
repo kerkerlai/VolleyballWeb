@@ -54,7 +54,7 @@
                 <label for="slot-limit" class="block text-gray-700 text-sm font-bold mb-2">人數限制:</label>
                 <input type="number" id="slot-limit" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="10">
             </div>
-             <div class="mb-4">
+            <div class="mb-4">
                 <label for="slot-male-limit" class="block text-gray-700 text-sm font-bold mb-2">男生人數限制:</label>
                 <input type="number" id="slot-male-limit" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="5">
             </div>
@@ -82,12 +82,12 @@
 
         <div id="slot-list">
             <h2 class="text-xl font-semibold text-gray-700 mb-4">可報名場次</h2>
-            </div>
+        </div>
 
         <div id="my-slots" class="mt-8" style="display: none;">
             <h2 class="text-xl font-semibold text-gray-700 mb-4">我的報名場次</h2>
             <div id="my-slots-list">
-                </div>
+            </div>
         </div>
     </div>
 
@@ -107,6 +107,8 @@
                     auth.isSignedIn.listen(updateSignInStatus);
                     // 在這裡呼叫載入場次
                     loadSlots();
+                }).catch(error => {
+                    console.error("Error initializing Google Auth:", error); // 加上錯誤處理
                 });
             });
         }
@@ -153,6 +155,8 @@
             auth.signIn().then(() => {
                 // 登入成功後重新載入場次
                 loadSlots();
+            }).catch(error => {
+                console.error("Google Sign-In error:", error); // 加上錯誤處理
             }); // 使用全域變數
         }
 
@@ -163,6 +167,8 @@
                 // 清空場次
                 document.getElementById('slot-list').innerHTML = '';
                 loadSlots();
+            }).catch(error => {
+                console.error("Google Sign-Out error:", error); // 加上錯誤處理
             });
         }
 
@@ -225,7 +231,7 @@
                 alert('此場次已額滿');
                 return;
             }
-             if (gender === '男' && slots[index].maleCount >= slots[index].maleLimit) {
+            if (gender === '男' && slots[index].maleCount >= slots[index].maleLimit) {
                 alert('此場次男生人數已達上限');
                 return;
             }
@@ -241,7 +247,7 @@
                 gender: gender,
                 nickname: nickname
             });
-             if(gender === '男') {
+            if (gender === '男') {
                 slots[index].maleCount++;
             } else {
                 slots[index].femaleCount++;
@@ -264,10 +270,10 @@
             if (slotIndex !== -1) {
                 const signedUpIndex = slots[slotIndex].signedUp.findIndex(s => s.email === email);
                 if (signedUpIndex !== -1) {
-                     const gender = slots[slotIndex].signedUp[signedUpIndex].gender;
+                    const gender = slots[slotIndex].signedUp[signedUpIndex].gender;
                     slots[slotIndex].signedUp.splice(signedUpIndex, 1); // Remove the user from the signed up list.
-                     if (gender === '男') {
-                         slots[slotIndex].maleCount--;
+                    if (gender === '男') {
+                        slots[slotIndex].maleCount--;
                     } else {
                         slots[slotIndex].femaleCount--;
                     }
@@ -369,7 +375,7 @@
 
         // 資料持久化
         let slots = JSON.parse(localStorage.getItem('volleyballSlots')) || [
-             {
+            {
                 time: "3/24(一)下午18:00-21:00",
                 limit: 10,
                 maleLimit: 5,
@@ -405,10 +411,9 @@
 
         // 頁面載入時執行
         window.onload = function() {
-            initGoogleAuth(); // 初始化 Google Auth
-
             // 確保在 DOMContentLoaded 事件後執行
             document.addEventListener('DOMContentLoaded', () => {
+                initGoogleAuth(); // 初始化 Google Auth
                 document.getElementById('add-slot').addEventListener('click', addSlot);
                 document.getElementById('login-button').addEventListener('click', signIn);
                 document.getElementById('logout-button').addEventListener('click', signOut);
