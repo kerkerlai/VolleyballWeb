@@ -292,27 +292,11 @@
             </div>
             <div id="場地列表" class="section-container">
                 <h2>可報名場地</h2>
-                <div class="filter-options">
-                    <label>篩選場地位置：</label>
-                    <input type="checkbox" id="filter-nva" value="NVA" checked> <label for="filter-nva">NVA</label>
-                    <input type="checkbox" id="filter-sanm" value="三米線" checked> <label for="filter-sanm">三米線</label>
-                    <input type="checkbox" id="filter-lanque" value="藍鵲排球" checked> <label for="filter-lanque">藍鵲排球</label>
-                    <input type="checkbox" id="filter-touqian" value="頭前國中" checked> <label for="filter-touqian">頭前國中</label>
-                    <input type="checkbox" id="filter-612" value="612排球星球" checked> <label for="filter-612">612排球星球</label>
-                </div>
                 <div id="場地列表內容">
                 </div>
             </div>
             <div id="報名確認表單" class="section-container">
                 <h2>我的報名表單</h2>
-                <div class="filter-options">
-                    <label>篩選場地位置：</label>
-                    <input type="checkbox" id="filter-my-nva" value="NVA" checked> <label for="filter-my-nva">NVA</label>
-                    <input type="checkbox" id="filter-my-sanm" value="三米線" checked> <label for="filter-my-sanm">三米線</label>
-                    <input type="checkbox" id="filter-my-lanque" value="藍鵲排球" checked> <label for="filter-my-lanque">藍鵲排球</label>
-                    <input type="checkbox" id="filter-my-touqian" value="頭前國中" checked> <label for="filter-my-touqian">頭前國中</label>
-                    <input type="checkbox" id="filter-my-612" value="612排球星球" checked> <label for="filter-my-612">612排球星球</label>
-                </div>
                 <ul id="報名確認表單內容">
                 </ul>
             </div>
@@ -332,13 +316,13 @@
     <script>
         // Firebase 相關設定 (請替換成您的 Firebase 配置)
         const firebaseConfig = {
-            apiKey: "AIzaSyB8PzKSCgIl0_JIVxetSK3Lujwpqr-eEJA",
-            authDomain: "volleyballweb-6476a.firebaseapp.com",
-            projectId: "volleyballweb-6476a",
-            storageBucket: "volleyballweb-6476a.firebasestorage.app",
-            messagingSenderId: "107455998937",
-            appId: "1:107455998937:web:1203dc9377ccf38a2547c8",
-            measurementId: "G-1J504YXCHY"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID",
+            measurementId: "YOUR_MEASUREMENT_ID"
         };
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
@@ -362,22 +346,6 @@
         const 登出註冊區 = document.getElementById('登出註冊區');
         const 登出按鈕 = document.getElementById('登出按鈕');
         const 取消發布按鈕 = document.getElementById('取消發布');
-
-        // 篩選器元素
-        const 場地列表篩選器 = {
-            nva: document.getElementById('filter-nva'),
-            sanm: document.getElementById('filter-sanm'),
-            lanque: document.getElementById('filter-lanque'),
-            touqian: document.getElementById('filter-touqian'),
-            liu12: document.getElementById('filter-612'),
-        };
-        const 我的報名篩選器 = {
-            nva: document.getElementById('filter-my-nva'),
-            sanm: document.getElementById('filter-my-sanm'),
-            lanque: document.getElementById('filter-my-lanque'),
-            touqian: document.getElementById('filter-my-touqian'),
-            liu12: document.getElementById('filter-my-612'),
-        };
 
         // 登入/註冊事件
         登入按鈕.addEventListener('click', () => {
@@ -541,21 +509,6 @@
                         `;
                         場地列表內容.appendChild(場地卡片);
 
-                        // 篩選器事件
-                        Object.values(場地列表篩選器).forEach(filter => {
-                            filter.addEventListener('change', () => {
-                                const 場地位置值 = 場地資料.場地位置; // 直接取得場地位置
-                                const filterValue = filter.value;
-                                if (filter.checked) {
-                                    場地卡片.classList.remove('hidden');
-                                } else {
-                                    if (場地位置值 !== filterValue) { // 使用 !== 比較值
-                                        場地卡片.classList.add('hidden');
-                                    }
-                                }
-                            });
-                        });
-
                         // "我要報名" 按鈕事件
                         const 報名按鈕 = 場地卡片.querySelector('.btn-primary');
                         報名按鈕.addEventListener('click', () => {
@@ -584,7 +537,7 @@
                                                 return;
                                             }
 
-                                            // 檢查性別限制
+                                             // 檢查性別限制
                                             let 符合性別限制 = false;
                                             if (性別 === 'male' && 場地資料.男生人數 > 0) {
                                                 符合性別限制 = true;
@@ -667,7 +620,7 @@
                     snapshot.forEach((doc) => {
                         const 場地資料 = doc.data();
                         const 報名項目 = document.createElement('li');
-                        const 性別 = 場地資料.已報名者性別[currentUser.uid]; // 取得報名者的性別
+                         const 性別 = 場地資料.已報名者性別[currentUser.uid]; // 取得報名者的性別
                         報名項目.innerHTML = `
                             <span>場次：${場地資料.場次}</span>
                             <span>場地位置：${場地資料.場地位置}</span>
@@ -678,27 +631,12 @@
                         `;
                         報名確認表單內容.appendChild(報名項目);
 
-                        // 篩選器事件
-                        Object.values(我的報名篩選器).forEach(filter => {
-                            filter.addEventListener('change', () => {
-                                 const 場地位置值 = 場地資料.場地位置; // 直接取得場地位置
-                                const filterValue = filter.value;
-                                if (filter.checked) {
-                                    報名項目.classList.remove('hidden');
-                                } else {
-                                     if (場地位置值 !== filterValue) {
-                                         報名項目.classList.add('hidden');
-                                    }
-                                }
-                            });
-                        });
-                        
                         // "取消報名" 按鈕事件
                         const 取消報名按鈕 = 報名項目.querySelector('.btn-secondary');
                         取消報名按鈕.addEventListener('click', () => {
                             const 場地id = 取消報名按鈕.dataset.場地id;
                             if (confirm('確定要取消報名嗎？')) {
-                                db.collection('場地').doc(場地id).get()
+                                 db.collection('場地').doc(場地id).get()
                                     .then((場地文件) => {
                                         if (場地文件.exists) {
                                             const 場地資料 = 場地文件.data();
@@ -708,7 +646,7 @@
                                                 db.collection('場地').doc(場地id).update({
                                                     報名人數: 場地資料.報名人數 - 1,
                                                     已報名者: firebase.firestore.FieldValue.arrayRemove(currentUser.uid),
-                                                    [`已報名者性別.${currentUser.uid}`]: firebase.firestore.FieldValue.delete() // 移除性別
+                                                     [`已報名者性別.${currentUser.uid}`]: firebase.firestore.FieldValue.delete() // 移除性別
                                                 })
                                                     .then(() => {
                                                         console.log('取消報名成功');
@@ -721,7 +659,7 @@
                                                         alert('取消報名失敗，請重試。' + error.message);
                                                     });
                                             } else {
-                                                alert('您尚未報名此場地。'); // 避免重複取消報名
+                                                 alert('您尚未報名此場地。'); // 避免重複取消報名
                                             }
                                         } else {
                                             console.error('找不到場地');
@@ -760,7 +698,7 @@
                         }
                         場地統計資料[場地.場地位置].總人數 += 場地.報名人數;
                         場地統計資料[場地.場地位置].場次.push(場地.場次);
-                        場地統計資料[場地.場地位置].費用加總 += 場地.費用;
+                         場地統計資料[場地.場地位置].費用加總 += 場地.費用;
                     });
 
                     for (const 場地位置 in 場地統計資料) {
