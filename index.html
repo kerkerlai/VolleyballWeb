@@ -542,7 +542,7 @@
                         場地列表內容.appendChild(場地卡片);
 
                         // 篩選器事件
-                        Object.entries(場地列表篩選器).forEach(([key, filter) => {
+                        Object.entries(場地列表篩選器).forEach(([key, filter]) => {
                             filter.addEventListener('change', () => {
                                 // 修正：使用textContent獲取場地位置，並使用includes進行比較
                                 const 場地位置文字 = 場地卡片.querySelector('p:nth-of-type(1)').textContent;
