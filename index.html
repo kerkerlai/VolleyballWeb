@@ -618,20 +618,24 @@
         }
 
        // 取消我的報名
-        function 取消我的報名(場地ID) {
-            console.log('取消報名', 場地ID);
+       function 取消我的報名(場地ID) {
+            console.log('取消報名', 場地ID); // 【偵錯 1】 檢查函式是否被呼叫
             if (!currentUser) {
-                console.log('使用者未登入');
+                console.log('使用者未登入');  // 【偵錯 2】 檢查是否取得 currentUser
                 return;
             }
+
             db.collection('場地').doc(場地ID).get()
                 .then(doc => {
                     if (doc.exists) {
                         const 場地資料 = doc.data();
+                        console.log('取得場地資料', 場地資料); // 【偵錯 3】 檢查是否取得場地資料
                         if (場地資料.已報名者.includes(currentUser.uid)) {
+                            console.log('使用者已報名此場地'); // 【偵錯 4】 檢查是否包含使用者 UID
                             // 檢查當前人數是否大於 0，避免出現負數
                             const 當前人數 = 場地資料.報名人數 || 0;
                             const 新報名人數 = Math.max(0, 當前人數 - 1);
+                            console.log('新的報名人數', 新報名人數); // 【偵錯 7】  確認新的報名人數
 
                             // 更新 Firestore 中的資料
                             db.collection('場地').doc(場地ID).update({
@@ -647,9 +651,11 @@
                                 alert('取消報名失敗，請重試。');
                             });
                         } else {
+                            console.log('使用者未報名此場地'); // 【偵錯 5】 
                             alert('您未報名此場地。');
                         }
                     } else {
+                        console.log('場地不存在'); // 【偵錯 6】
                         alert('場地不存在。');
                     }
                 }).catch(error => {
