@@ -1,471 +1,671 @@
-請輸入場地位置" required>
-</div>
-<div class="form-group">
-    <label for="費用">費用</label>
-    <input type="number" id="費用" name="費用" placeholder="請輸入費用" required>
-</div>
-<div class="form-group">
-    <label for="時間">時間</label>
-    <select id="時間" name="時間" required>
-        <option value="" disabled selected>請選擇時間</option>
-        <option value="星期一 18:00-20:00">星期一 18:00-20:00</option>
-        <option value="星期二 18:00-20:00">星期二 18:00-20:00</option>
-        <option value="星期三 18:00-20:00">星期三 18:00-20:00</option>
-        <option value="星期四 18:00-20:00">星期四 18:00-20:00</option>
-        <option value="星期五 18:00-20:00">星期五 18:00-20:00</option>
-        <option value="星期六 14:00-16:00">星期六 14:00-16:00</option>
-        <option value="星期日 14:00-16:00">星期日 14:00-16:00</option>
-    </select>
-</div>
-<div class="form-group">
-    <label for="男女比例">男女比例</label>
-    <select id="男女比例" name="男女比例" required>
-        <option value="" disabled selected>請選擇男女比例</option>
-        <option value="不限">不限</option>
-        <option value="男多於女">男多於女</option>
-        <option value="女多於男">女多於男</option>
-        <option value="男女平均">男女平均</option>
-    </select>
-</div>
-<div class="form-group">
-    <label for="其他敘述">其他敘述</label>
-    <textarea id="其他敘述" name="其他敘述" placeholder="請輸入其他敘述"></textarea>
-</div>
-<button type="submit" class="btn-primary">發布場地</button>
-<button type="button" class="btn-secondary" id="取消發布">取消</button>
-</form>
-</div>
-
-<div id="場地列表">
-<h2 class="section-title">可報名場地</h2>
-<div id="場地列表內容">
-</div>
-</div>
-
-<div id="報名確認表單" class="hidden">
-<h2 class="section-title">我的報名表單</h2>
-<ul id="報名確認表單內容">
-</ul>
-</div>
-
-<div id="管理員後台" class="hidden">
-<h2 class="section-title">管理員後台</h2>
-<div id="管理員後台內容">
-</div>
-</div>
-
-<div id="登入註冊區">
-<button id="登入按鈕" class="btn-primary">登入 / 註冊</button>
-</div>
-<div id="登出註冊區" class="hidden">
-<button id="登出按鈕" class="btn-primary">登出</button>
-</div>
-</div>
-
-<script>
-// Firebase 相關設定 (請替換成您的 Firebase 配置)
-const firebaseConfig = {
-apiKey: "YOUR_API_KEY",
-authDomain: "YOUR_AUTH_DOMAIN",
-projectId: "YOUR_PROJECT_ID",
-storageBucket: "YOUR_STORAGE_BUCKET",
-messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-appId: "YOUR_APP_ID"
-};
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-let currentUser = null;
-let userRole = 'user'; // 預設為一般使用者
-// 在這裡新增管理員帳號的陣列
-const adminEmails = ['admin1@example.com', 'admin2@example.com'];
-
-// HTML 元素
-const 場地表單 = document.getElementById('場地表單');
-const 場地列表內容 = document.getElementById('場地列表內容');
-const 報名確認表單內容 = document.getElementById('報名確認表單內容');
-const 管理員後台內容 = document.getElementById('管理員後台內容');
-const 場地發布表單 = document.getElementById('場地發布表單');
-const 管理員後台 = document.getElementById('管理員後台');
-const 報名確認表單 = document.getElementById('報名確認表單');
-const 登入註冊區 = document.getElementById('登入註冊區');
-const 登入按鈕 = document.getElementById('登入按鈕');
-const 登出註冊區 = document.getElementById('登出按鈕');
-const 登出按鈕 = document.getElementById('登出按鈕');
-const 取消發布按鈕 = document.getElementById('取消發布');
-
-// 登入/註冊事件
-登入按鈕.addEventListener('click', () => {
-const provider = new firebase.auth.GoogleAuthProvider();
-auth.signInWithPopup(provider)
-.then((result) => {
-    // 登入成功
-    currentUser = result.user;
-    console.log('登入成功', currentUser);
-    checkUserRole(); // 檢查使用者角色
-})
-.catch((error) => {
-    // 登入失敗
-    console.error('登入失敗', error);
-    alert('登入失敗，請重試。');
-});
-});
-
-// 登出事件
-登出按鈕.addEventListener('click', () => {
-auth.signOut()
-.then(() => {
-    // 登出成功
-    currentUser = null;
-    userRole = 'user'; // 重置使用者角色
-    console.log('登出成功');
-    updateUI(); // 更新UI
-})
-.catch((error) => {
-    // 登出失敗
-    console.error('登出失敗', error);
-    alert('登出失敗，請重試。');
-});
-});
-
-// 檢查使用者角色
-function checkUserRole() {
-if (currentUser) {
-// 檢查是否為管理員
-if (adminEmails.includes(currentUser.email)) {
-    userRole = 'admin';
-} else {
-    userRole = 'user';
-}
-updateUI();
-} else {
-updateUI();
-}
-}
-
-// 更新 UI
-function updateUI() {
-登入註冊區.classList.toggle('hidden', !!currentUser);
-登出註冊區.classList.toggle('hidden', !currentUser);
-場地發布表單.classList.toggle('hidden', userRole !== 'admin');
-管理員後台.classList.toggle('hidden', userRole !== 'admin');
-報名確認表單.classList.toggle('hidden', !currentUser);
-
-if (currentUser) {
-// 載入資料
-載入場地資料();
-載入我的報名資料();
-if (userRole === 'admin') {
-    載入場地統計資料();
-}
-} else {
-// 清空資料
-場地列表內容.innerHTML = '';
-報名確認表單內容.innerHTML = '';
-管理員後台內容.innerHTML = '';
-}
-}
-
-// 時間選項陣列
-const timeOptions = [
-"星期一 18:00-20:00",
-"星期二 18:00-20:00",
-"星期三 18:00-20:00",
-"星期四 18:00-20:00",
-"星期五 18:00-20:00",
-"星期六 14:00-16:00",
-"星期日 14:00-16:00"
-];
-
-// 表單提交事件
-場地表單.addEventListener('submit', (event) => {
-event.preventDefault();
-
-const 標題 = document.getElementById('標題').value;
-const 場地位置 = document.getElementById('場地位置').value;
-const 費用 = parseInt(document.getElementById('費用').value);
-const 時間 = document.getElementById('時間').value;
-const 男女比例 = document.getElementById('男女比例').value;
-const 其他敘述 = document.getElementById('其他敘述').value;
-
-if (!標題 || !場地位置 || isNaN(費用) || !時間 || !男女比例) {
-alert('請填寫所有必填欄位。');
-return;
-}
-
-db.collection('場地').add({
-標題: 標題,
-場地位置: 場地位置,
-費用: 費用,
-時間: 時間,
-男女比例: 男女比例,
-其他敘述: 其他敘述,
-報名人數: 0,
-男生人數: 0,
-女生人數: 0,
-已報名者: [] // 儲存已報名者的 UID
-})
-.then(() => {
-console.log('場地資訊發布成功');
-alert('場地資訊發布成功！');
-場地表單.reset();
-載入場地資料(); // 重新載入場地資料
-})
-.catch((error) => {
-console.error('場地資訊發布失敗', error);
-alert('場地資訊發布失敗，請重試。');
-});
-});
-
-// 取消發布按鈕事件
-取消發布按鈕.addEventListener('click', () => {
-場地表單.reset();
-});
-
-// 載入場地資料
-function 載入場地資料() {
-場地列表內容.innerHTML = ''; // 清空現有內容
-db.collection('場地').get()
-.then((snapshot) => {
-    snapshot.forEach((doc) => {
-        const 場地資料 = doc.data();
-        const 場地卡片 = document.createElement('div');
-        場地卡片.className = '場地卡片';
-        場地卡片.innerHTML = `
-            <h3>${場地資料.標題}</h3>
-            <p>場地位置：${場地資料.場地位置}</p>
-            <p>費用：${場地資料.費用} 元</p>
-            <p>時間：${場地資料.時間}</p>
-            <p>男女比例：${場地資料.男女比例}</p>
-            <p>其他敘述：${場地資料.其他敘述}</p>
-            <p class="報名人數">報名人數：${場地資料.報名人數} / ${場地資料.男女比例 === '不限' ? '無限制' : 
-                                                    場地資料.男女比例 === '男多於女' ? '男多' : 
-                                                    場地資料.男女比例 === '女多於男' ? '女多' : '男女平均'}</p>
-            <div class="actions">
-                <button class="btn-primary" data-場地id="${doc.id}">我要報名</button>
-            </div>
-        `;
-        場地列表內容.appendChild(場地卡片);
-    });
-    // 在場地卡片生成後，為報名按鈕添加事件監聽器
-    const 報名按鈕們 = document.querySelectorAll('.場地卡片 .btn-primary');
-    報名按鈕們.forEach(按鈕 => {
-        按鈕.addEventListener('click', (event) => {
-            const 場地ID = event.target.dataset.場地id;
-            處理報名(場地ID);
-        });
-    });
-})
-.catch((error) => {
-    console.error('載入場地資料失敗', error);
-    alert('載入場地資料失敗，請重試。');
-});
-}
-
-// 處理報名
-function 處理報名(場地ID) {
-if (!currentUser) {
-alert('請先登入才能報名場地。');
-return;
-}
-
-const userGender = prompt("請輸入您的性別 (男/女):").toLowerCase();
-if (userGender !== '男' && userGender !== '女') {
-alert('性別輸入錯誤，請重新報名。');
-return;
-}
-
-db.collection('場地').doc(場地ID).get()
-.then((doc) => {
-    if (doc.exists) {
-        const 場地資料 = doc.data();
-        if (場地資料.已報名者 && 場地資料.已報名者.includes(currentUser.uid)) {
-            alert('您已經報名過此場地了。');
-            return;
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>排球場地報名系統</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .section-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #1f2937; /* Tailwind gray-800 */
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db; /* Tailwind gray-300 */
+            border-radius: 0.375rem; /* Tailwind rounded-md */
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .form-group textarea {
+            resize: vertical;
+            height: 100px;
+        }
+        .btn-primary {
+            background-color: #6b7280; /* Tailwind gray-500 */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 0.375rem; /* Tailwind rounded-md */
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #374151; /* Tailwind gray-700 */
+        }
+        .btn-secondary {
+            background-color: #e5e7eb; /* Tailwind gray-200 */
+            color: #374151; /* Tailwind gray-700 */
+            padding: 10px 20px;
+            border: none;
+            border-radius: 0.375rem; /* Tailwind rounded-md */
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+            margin-left: 10px;
+        }
+        .btn-secondary:hover {
+            background-color: #d1d5db; /* Tailwind gray-300 */
+        }
+        #場地列表 {
+            margin-top: 20px;
+        }
+        .場地卡片 {
+            background-color: white;
+            border-radius: 0.5rem; /* Tailwind rounded-lg */
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Tailwind shadow-md */
+        }
+        .場地卡片 h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #1f2937; /* Tailwind gray-800 */
+        }
+        .場地卡片 p {
+            margin-bottom: 5px;
+            color: #4b5563; /* Tailwind gray-600 */
+        }
+        .報名人數 {
+            font-weight: bold;
+            color: #6b7280; /* Tailwind gray-500 */
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
         }
 
-        // 檢查男女比例
-        if (場地資料.男女比例 !== '不限') {
-            let 男生人數 = 場地資料.男生人數 || 0;
-            let 女生人數 = 場地資料.女生人數 || 0;
-            if (userGender === '男') {
-                男生人數++;
+        #報名確認表單 {
+            margin-top: 20px;
+        }
+        #報名確認表單 h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #1f2937; /* Tailwind gray-800 */
+        }
+        #報名確認表單 ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        #報名確認表單 li {
+            background-color: white;
+            border-radius: 0.5rem; /* Tailwind rounded-lg */
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Tailwind shadow-md */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #4b5563; /* Tailwind gray-600 */
+        }
+        #報名確認表單 li span {
+            font-weight: bold;
+        }
+        #管理員後台 {
+            margin-top: 20px;
+        }
+        #管理員後台 h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #1f2937; /* Tailwind gray-800 */
+        }
+        #管理員後台 .場地統計卡片 {
+            background-color: white;
+            border-radius: 0.5rem; /* Tailwind rounded-lg */
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Tailwind shadow-md */
+        }
+        #管理員後台 .場地統計卡片 h3 {
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+            color: #1f2937; /* Tailwind gray-800 */
+        }
+        #管理員後台 .場地統計卡片 p {
+            margin-bottom: 5px;
+            color: #4b5563; /* Tailwind gray-600 */
+        }
+        #管理員後台 .場地統計卡片 ul {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+        #管理員後台 .場地統計卡片 li {
+            margin-bottom: 5px;
+            color: #4b5563; /* Tailwind gray-600 */
+        }
+        .hidden {
+            display: none;
+        }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0.375rem; /* Tailwind rounded-md */
+            font-size: 1rem;
+        }
+        .alert-success {
+            background-color: #f0fdf4; /* Tailwind green-100 */
+            border: 1px solid #34d399; /* Tailwind green-400 */
+            color: #065f46; /* Tailwind green-800 */
+        }
+        .alert-danger {
+            background-color: #fef2f2; /* Tailwind red-100 */
+            border: 1px solid #f87171; /* Tailwind red-500 */
+            color: #b91c1c; /* Tailwind red-700 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container">
+        <h1 class="section-title">排球場地報名系統</h1>
+
+        <div id="場地發布表單" class="hidden">
+            <h2 class="section-title">發布場地資訊</h2>
+            <form id="場地表單">
+                <div class="form-group">
+                    <label for="標題">標題</label>
+                    <input type="text" id="標題" name="標題" placeholder="請輸入場地標題" required>
+                </div>
+                <div class="form-group">
+                    <label for="場地位置">場地位置</label>
+                    <input type="text" id="場地位置" name="場地位置" placeholder="請輸入場地位置" required>
+                </div>
+                <div class="form-group">
+                    <label for="費用">費用</label>
+                    <input type="number" id="費用" name="費用" placeholder="請輸入費用" required>
+                </div>
+                <div class="form-group">
+                    <label for="時間">時間</label>
+                    <select id="時間" name="時間" required>
+                        <option value="" disabled selected>請選擇時間</option>
+                        <option value="星期一 18:00-20:00">星期一 18:00-20:00</option>
+                        <option value="星期二 18:00-20:00">星期二 18:00-20:00</option>
+                        <option value="星期三 18:00-20:00">星期三 18:00-20:00</option>
+                        <option value="星期四 18:00-20:00">星期四 18:00-20:00</option>
+                        <option value="星期五 18:00-20:00">星期五 18:00-20:00</option>
+                        <option value="星期六 14:00-16:00">星期六 14:00-16:00</option>
+                        <option value="星期日 14:00-16:00">星期日 14:00-16:00</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="男女比例">男女比例</label>
+                    <select id="男女比例" name="男女比例" required>
+                        <option value="" disabled selected>請選擇男女比例</option>
+                        <option value="不限">不限</option>
+                        <option value="男多於女">男多於女</option>
+                        <option value="女多於男">女多於男</option>
+                        <option value="男女平均">男女平均</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="其他敘述">其他敘述</label>
+                    <textarea id="其他敘述" name="其他敘述" placeholder="請輸入其他敘述"></textarea>
+                </div>
+                <button type="submit" class="btn-primary">發布場地</button>
+                <button type="button" class="btn-secondary" id="取消發布">取消</button>
+            </form>
+        </div>
+
+        <div id="場地列表">
+            <h2 class="section-title">可報名場地</h2>
+            <div id="場地列表內容">
+                </div>
+        </div>
+
+        <div id="報名確認表單" class="hidden">
+            <h2 class="section-title">我的報名表單</h2>
+            <ul id="報名確認表單內容">
+                </ul>
+        </div>
+
+        <div id="管理員後台" class="hidden">
+            <h2 class="section-title">管理員後台</h2>
+            <div id="管理員後台內容">
+                </div>
+        </div>
+
+        <div id="登入註冊區">
+            <button id="登入按鈕" class="btn-primary">登入 / 註冊</button>
+        </div>
+        <div id="登出註冊區" class="hidden">
+            <button id="登出按鈕" class="btn-primary">登出</button>
+        </div>
+    </div>
+
+    <script>
+        // Firebase 相關設定 (請替換成您的 Firebase 配置)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID",
+            measurementId: "YOUR_MEASUREMENT_ID"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let currentUser = null;
+        let userRole = 'user'; // 預設為一般使用者
+        // 在這裡新增管理員帳號的陣列
+        const adminEmails = ['kerkerlai@gmail.com', 'admin2@example.com'];
+
+        // HTML 元素
+        const 場地表單 = document.getElementById('場地表單');
+        const 場地列表內容 = document.getElementById('場地列表內容');
+        const 報名確認表單內容 = document.getElementById('報名確認表單內容');
+        const 管理員後台內容 = document.getElementById('管理員後台內容');
+        const 場地發布表單 = document.getElementById('場地發布表單');
+        const 管理員後台 = document.getElementById('管理員後台');
+        const 報名確認表單 = document.getElementById('報名確認表單');
+        const 登入註冊區 = document.getElementById('登入註冊區');
+        const 登入按鈕 = document.getElementById('登入按鈕');
+        const 登出註冊區 = document.getElementById('登出註冊區');
+        const 登出按鈕 = document.getElementById('登出按鈕');
+        const 取消發布按鈕 = document.getElementById('取消發布');
+
+        // 登入/註冊事件
+        登入按鈕.addEventListener('click', () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    // 登入成功
+                    currentUser = result.user;
+                    console.log('登入成功', currentUser);
+                    checkUserRole(); // 檢查使用者角色
+                })
+                .catch((error) => {
+                    // 登入失敗
+                    console.error('登入失敗', error);
+                    alert('登入失敗，請重試。');
+                });
+        });
+
+        // 登出事件
+        登出按鈕.addEventListener('click', () => {
+            auth.signOut()
+                .then(() => {
+                    // 登出成功
+                    currentUser = null;
+                    userRole = 'user'; // 重置使用者角色
+                    console.log('登出成功');
+                    updateUI(); // 更新UI
+                })
+                .catch((error) => {
+                    // 登出失敗
+                    console.error('登出失敗', error);
+                    alert('登出失敗，請重試。');
+                });
+        });
+
+        // 檢查使用者角色
+        function checkUserRole() {
+            if (currentUser) {
+                // 檢查是否為管理員
+                if (adminEmails.includes(currentUser.email)) {
+                    userRole = 'admin';
+                } else {
+                    userRole = 'user';
+                }
+                updateUI();
             } else {
-                女生人數++;
+                updateUI();
             }
+        }
 
-            let 可以報名 = true;
-            if (場地資料.男女比例 === '男多於女' && 男生人數 <= 女生人數) {
-                可以報名 = false;
-            } else if (場地資料.男女比例 === '女多於男' && 女生人數 <= 男生人數) {
-                可以報名 = false;
-            } else if (場地資料.男女比例 === '男女平均' && Math.abs(男生人數 - 女生人數) > 1) {
-                可以報名 = false;
+        // 更新 UI
+        function updateUI() {
+            登入註冊區.classList.toggle('hidden', !!currentUser);
+            登出註冊區.classList.toggle('hidden', !currentUser);
+            場地發布表單.classList.toggle('hidden', userRole !== 'admin');
+            管理員後台.classList.toggle('hidden', userRole !== 'admin');
+            報名確認表單.classList.toggle('hidden', !currentUser);
+
+            if (currentUser) {
+                // 載入資料
+                載入場地資料();
+                載入我的報名資料();
+                if (userRole === 'admin') {
+                    載入場地統計資料();
+                }
+            } else {
+                // 清空資料
+                場地列表內容.innerHTML = '';
+                報名確認表單內容.innerHTML = '';
+                管理員後台內容.innerHTML = '';
             }
+        }
 
-            if (!可以報名) {
-                alert('此場地男女比例限制，目前無法報名。');
+        // 時間選項陣列
+        const timeOptions = [
+            "星期一 18:00-20:00",
+            "星期二 18:00-20:00",
+            "星期三 18:00-20:00",
+            "星期四 18:00-20:00",
+            "星期五 18:00-20:00",
+            "星期六 14:00-16:00",
+            "星期日 14:00-16:00"
+        ];
+
+        // 表單提交事件
+        場地表單.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const 標題 = document.getElementById('標題').value;
+            const 場地位置 = document.getElementById('場地位置').value;
+            const 費用 = parseInt(document.getElementById('費用').value);
+            const 時間 = document.getElementById('時間').value;
+            const 男女比例 = document.getElementById('男女比例').value;
+            const 其他敘述 = document.getElementById('其他敘述').value;
+
+            if (!標題 || !場地位置 || isNaN(費用) || !時間 || !男女比例) {
+                alert('請填寫所有必填欄位。');
                 return;
             }
+
+            db.collection('場地').add({
+                標題: 標題,
+                場地位置: 場地位置,
+                費用: 費用,
+                時間: 時間,
+                男女比例: 男女比例,
+                其他敘述: 其他敘述,
+                報名人數: 0,
+                男生人數: 0,
+                女生人數: 0,
+                已報名者: [] // 儲存已報名者的 UID
+            })
+            .then(() => {
+                console.log('場地資訊發布成功');
+                alert('場地資訊發布成功！');
+                場地表單.reset();
+                載入場地資料(); // 重新載入場地資料
+            })
+            .catch((error) => {
+                console.error('場地資訊發布失敗', error);
+                alert('場地資訊發布失敗，請重試。');
+            });
+        });
+
+        // 取消發布按鈕事件
+        取消發布按鈕.addEventListener('click', () => {
+            場地表單.reset();
+        });
+
+        // 載入場地資料
+        function 載入場地資料() {
+            場地列表內容.innerHTML = ''; // 清空現有內容
+            db.collection('場地').get()
+                .then((snapshot) => {
+                    snapshot.forEach((doc) => {
+                        const 場地資料 = doc.data();
+                        const 場地卡片 = document.createElement('div');
+                        場地卡片.className = '場地卡片';
+                        場地卡片.innerHTML = `
+                            <h3>${場地資料.標題}</h3>
+                            <p>場地位置：${場地資料.場地位置}</p>
+                            <p>費用：${場地資料.費用} 元</p>
+                            <p>時間：${場地資料.時間}</p>
+                            <p>男女比例：${場地資料.男女比例}</p>
+                            <p>其他敘述：${場地資料.其他敘述}</p>
+                            <p class="報名人數">報名人數：${場地資料.報名人數} / ${場地資料.男女比例 === '不限' ? '無限制' : 
+                                                                    場地資料.男女比例 === '男多於女' ? '男多' : 
+                                                                    場地資料.男女比例 === '女多於男' ? '女多' : '男女平均'}</p>
+                            <div class="actions">
+                                <button class="btn-primary" data-場地id="${doc.id}">我要報名</button>
+                            </div>
+                        `;
+                        場地列表內容.appendChild(場地卡片);
+                    });
+                    // 在場地卡片生成後，為報名按鈕添加事件監聽器
+                    const 報名按鈕們 = document.querySelectorAll('.場地卡片 .btn-primary');
+                    報名按鈕們.forEach(按鈕 => {
+                        按鈕.addEventListener('click', (event) => {
+                            const 場地ID = event.target.dataset.場地id;
+                            處理報名(場地ID);
+                        });
+                    });
+                })
+                .catch((error) => {
+                    console.error('載入場地資料失敗', error);
+                    alert('載入場地資料失敗，請重試。');
+                });
         }
 
-        // 更新報名人數和已報名者
-        db.collection('場地').doc(場地ID).update({
-            報名人數: (場地資料.報名人數 || 0) + 1,
-            男生人數: userGender === '男' ? (場地資料.男生人數 || 0) + 1 : (場地資料.男生人數 || 0),
-            女生人數: userGender === '女' ? (場地資料.女生人數 || 0) + 1 : (場地資料.女生人數 || 0),
-            已報名者: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
-        })
-        .then(() => {
-            console.log('報名成功');
-            alert('報名成功！');
-            載入場地資料(); // 重新載入場地資料以更新人數
-            載入我的報名資料(); // 更新我的報名資料
-        })
-        .catch((error) => {
-            console.error('報名失敗', error);
-            alert('報名失敗，請重試。');
-        });
-    } else {
-        console.error('找不到場地');
-        alert('找不到場地，請重試。');
-    }
-})
-.catch((error) => {
-    console.error('Error getting document:', error);
-    alert('發生錯誤，請重試。');
-});
-}
+        // 處理報名
+        function 處理報名(場地ID) {
+            if (!currentUser) {
+                alert('請先登入才能報名場地。');
+                return;
+            }
 
-// 載入我的報名資料
-function 載入我的報名資料() {
-if (!currentUser) return;
+            const userGender = prompt("請輸入您的性別 (男/女):").toLowerCase();
+            if (userGender !== '男' && userGender !== '女') {
+                alert('性別輸入錯誤，請重新報名。');
+                return;
+            }
 
-報名確認表單內容.innerHTML = ''; // 清空現有內容
-let hasReservations = false; // 用於判斷是否有報名資料
+            db.collection('場地').doc(場地ID).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const 場地資料 = doc.data();
+                        if (場地資料.已報名者 && 場地資料.已報名者.includes(currentUser.uid)) {
+                            alert('您已經報名過此場地了。');
+                            return;
+                        }
 
-db.collection('場地').where('已報名者', 'array-contains', currentUser.uid).get()
-.then((snapshot) => {
-    snapshot.forEach((doc) => {
-        hasReservations = true;
-        const 場地資料 = doc.data();
-        const listItem = document.createElement('li');
-        listItem.innerHTML = `
-            <span>${場地資料.標題} - ${場地資料.時間}</span>
-            <button class="btn-secondary" data-場地id="${doc.id}">取消報名</button>
-        `;
-        報名確認表單內容.appendChild(listItem);
-    });
+                        // 檢查男女比例
+                        if (場地資料.男女比例 !== '不限') {
+                            let 男生人數 = 場地資料.男生人數 || 0;
+                            let 女生人數 = 場地資料.女生人數 || 0;
+                            if (userGender === '男') {
+                                男生人數++;
+                            } else {
+                                女生人數++;
+                            }
 
-    if (!hasReservations) {
-        報名確認表單內容.innerHTML = '<p>您尚未報名任何場地。</p>';
-    }
+                            let 可以報名 = true;
+                            if (場地資料.男女比例 === '男多於女' && 男生人數 <= 女生人數) {
+                                可以報名 = false;
+                            } else if (場地資料.男女比例 === '女多於男' && 女生人數 <= 男生人數) {
+                                可以報名 = false;
+                            } else if (場地資料.男女比例 === '男女平均' && Math.abs(男生人數 - 女生人數) > 1) {
+                                可以報名 = false;
+                            }
 
-    // 綁定取消報名事件
-    const 取消報名按鈕們 = 報名確認表單內容.querySelectorAll('.btn-secondary');
-    取消報名按鈕們.forEach(按鈕 => {
-        按鈕.addEventListener('click', (event) => {
-            const 場地ID = event.target.dataset.場地id;
-            處理取消報名(場地ID);
-        });
-    });
-})
-.catch((error) => {
-    console.error('載入我的報名資料失敗', error);
-    alert('載入我的報名資料失敗，請重試。');
-});
-}
+                            if (!可以報名) {
+                                alert('此場地男女比例限制，目前無法報名。');
+                                return;
+                            }
+                        }
 
-// 處理取消報名
-function 處理取消報名(場地ID) {
-if (!currentUser) {
-alert('請先登入才能取消報名。');
-return;
-}
-
-db.collection('場地').doc(場地ID).get()
-.then((doc) => {
-    if (doc.exists) {
-        const 場地資料 = doc.data();
-
-        if (!場地資料.已報名者 || !場地資料.已報名者.includes(currentUser.uid)) {
-            alert('您尚未報名此場地，無法取消報名。');
-            return;
+                        // 更新報名人數和已報名者
+                        db.collection('場地').doc(場地ID).update({
+                            報名人數: (場地資料.報名人數 || 0) + 1,
+                            男生人數: userGender === '男' ? (場地資料.男生人數 || 0) + 1 : (場地資料.男生人數 || 0),
+                            女生人數: userGender === '女' ? (場地資料.女生人數 || 0) + 1 : (場地資料.女生人數 || 0),
+                            已報名者: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
+                        })
+                        .then(() => {
+                            console.log('報名成功');
+                            alert('報名成功！');
+                            載入場地資料(); // 重新載入場地資料以更新人數
+                            載入我的報名資料(); // 更新我的報名資料
+                        })
+                        .catch((error) => {
+                            console.error('報名失敗', error);
+                            alert('報名失敗，請重試。');
+                        });
+                    } else {
+                        console.error('找不到場地');
+alert('找不到場地，請重試。');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error getting document:', error);
+                    alert('發生錯誤，請重試。');
+                });
         }
-        const userGender = prompt("請輸入您的性別 (男/女):").toLowerCase();
-        if (userGender !== '男' && userGender !== '女') {
-            alert('性別輸入錯誤，請重新取消報名。');
-            return;
+
+        // 載入我的報名資料
+        function 載入我的報名資料() {
+            if (!currentUser) return;
+
+            報名確認表單內容.innerHTML = ''; // 清空現有內容
+            let hasReservations = false; // 用於判斷是否有報名資料
+
+            db.collection('場地').where('已報名者', 'array-contains', currentUser.uid).get()
+                .then((snapshot) => {
+                    snapshot.forEach((doc) => {
+                        hasReservations = true;
+                        const 場地資料 = doc.data();
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `
+                            <span>${場地資料.標題} - ${場地資料.時間}</span>
+                            <button class="btn-secondary" data-場地id="${doc.id}">取消報名</button>
+                        `;
+                        報名確認表單內容.appendChild(listItem);
+                    });
+
+                    if (!hasReservations) {
+                        報名確認表單內容.innerHTML = '<p>您尚未報名任何場地。</p>';
+                    }
+
+                    // 綁定取消報名事件
+                    const 取消報名按鈕們 = 報名確認表單內容.querySelectorAll('.btn-secondary');
+                    取消報名按鈕們.forEach(按鈕 => {
+                        按鈕.addEventListener('click', (event) => {
+                            const 場地ID = event.target.dataset.場地id;
+                            處理取消報名(場地ID);
+                        });
+                    });
+                })
+                .catch((error) => {
+                    console.error('載入我的報名資料失敗', error);
+                    alert('載入我的報名資料失敗，請重試。');
+                });
         }
-        // 更新報名人數和已報名者
-        db.collection('場地').doc(場地ID).update({
-            報名人數: Math.max(0, (場地資料.報名人數 || 0) - 1), // 確保人數不為負數
-            男生人數: userGender === '男' ? Math.max(0, (場地資料.男生人數 || 0) - 1) : (場地資料.男生人數 || 0),
-            女生人數: userGender === '女' ? Math.max(0, (場地資料.女生人數 || 0) - 1) : (場地資料.女生人數 || 0),
-            已報名者: firebase.firestore.FieldValue.arrayRemove(currentUser.uid)
-        })
-        .then(() => {
-            console.log('取消報名成功');
-            alert('取消報名成功！');
-            載入場地資料(); // 重新載入場地資料以更新人數
-            載入我的報名資料(); // 更新我的報名資料
-        })
-        .catch((error) => {
-            console.error('取消報名失敗', error);
-            alert('取消報名失敗，請重試。');
+
+        // 處理取消報名
+        function 處理取消報名(場地ID) {
+            if (!currentUser) {
+                alert('請先登入才能取消報名。');
+                return;
+            }
+
+            db.collection('場地').doc(場地ID).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const 場地資料 = doc.data();
+
+                        if (!場地資料.已報名者 || !場地資料.已報名者.includes(currentUser.uid)) {
+                            alert('您尚未報名此場地，無法取消報名。');
+                            return;
+                        }
+                        const userGender = prompt("請輸入您的性別 (男/女):").toLowerCase();
+                        if (userGender !== '男' && userGender !== '女') {
+                            alert('性別輸入錯誤，請重新取消報名。');
+                            return;
+                        }
+                        // 更新報名人數和已報名者
+                        db.collection('場地').doc(場地ID).update({
+                            報名人數: Math.max(0, (場地資料.報名人數 || 0) - 1), // 確保人數不為負數
+                            男生人數: userGender === '男' ? Math.max(0, (場地資料.男生人數 || 0) - 1) : (場地資料.男生人數 || 0),
+                            女生人數: userGender === '女' ? Math.max(0, (場地資料.女生人數 || 0) - 1) : (場地資料.女生人數 || 0),
+                            已報名者: firebase.firestore.FieldValue.arrayRemove(currentUser.uid)
+                        })
+                        .then(() => {
+                            console.log('取消報名成功');
+                            alert('取消報名成功！');
+                            載入場地資料(); // 重新載入場地資料以更新人數
+                            載入我的報名資料(); // 更新我的報名資料
+                        })
+                        .catch((error) => {
+                            console.error('取消報名失敗', error);
+                            alert('取消報名失敗，請重試。');
+                        });
+                    } else {
+                        console.error('找不到場地');
+                        alert('找不到場地，請重試。');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error getting document:', error);
+                    alert('發生錯誤，請重試。');
+                });
+        }
+
+        // 載入場地統計資料 (管理員後台)
+        function 載入場地統計資料() {
+            管理員後台內容.innerHTML = ''; // 清空現有內容
+            db.collection('場地').get()
+                .then((snapshot) => {
+                    snapshot.forEach((doc) => {
+                        const 場地資料 = doc.data();
+                        const 場地統計卡片 = document.createElement('div');
+                        場地統計卡片.className = '場地統計卡片';
+                        場地統計卡片.innerHTML = `
+                            <h3>${場地資料.標題}</h3>
+                            <p>總報名人數：${場地資料.報名人數}</p>
+                            <p>男生人數：${場地資料.男生人數 || 0}</p>
+                            <p>女生人數：${場地資料.女生人數 || 0}</p>
+                            <p>男女比例：${場地資料.男女比例}</p>
+                            <ul>
+                                <li>已報名者：${場地資料.已報名者 ? 場地資料.已報名者.length : 0} 人</li>
+                            </ul>
+                        `;
+                        管理員後台內容.appendChild(場地統計卡片);
+                    });
+                })
+                .catch((error) => {
+                    console.error('載入場地統計資料失敗', error);
+                    alert('載入場地統計資料失敗，請重試。');
+                });
+        }
+
+        // 初始載入
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                console.log('已登入', currentUser);
+                checkUserRole();
+            } else {
+                console.log('未登入');
+                updateUI();
+            }
         });
-    } else {
-        console.error('找不到場地');
-        alert('找不到場地，請重試。');
-    }
-})
-.catch((error) => {
-    console.error('Error getting document:', error);
-    alert('發生錯誤，請重試。');
-});
-}
-
-// 載入場地統計資料 (管理員後台)
-function 載入場地統計資料() {
-管理員後台內容.innerHTML = ''; // 清空現有內容
-db.collection('場地').get()
-.then((snapshot) => {
-    snapshot.forEach((doc) => {
-        const 場地資料 = doc.data();
-        const 場地統計卡片 = document.createElement('div');
-        場地統計卡片.className = '場地統計卡片';
-        場地統計卡片.innerHTML = `
-            <h3>${場地資料.標題}</h3>
-            <p>總報名人數：${場地資料.報名人數}</p>
-            <p>男生人數：${場地資料.男生人數 || 0}</p>
-            <p>女生人數：${場地資料.女生人數 || 0}</p>
-            <p>男女比例：${場地資料.男女比例}</p>
-            <ul>
-                <li>已報名者：${場地資料.已報名者 ? 場地資料.已報名者.length : 0} 人</li>
-            </ul>
-        `;
-        管理員後台內容.appendChild(場地統計卡片);
-    });
-})
-.catch((error) => {
-    console.error('載入場地統計資料失敗', error);
-    alert('載入場地統計資料失敗，請重試。');
-});
-}
-
-// 初始載入
-auth.onAuthStateChanged((user) => {
-if (user) {
-currentUser = user;
-console.log('已登入', currentUser);
-checkUserRole();
-} else {
-console.log('未登入');
-updateUI();
-}
-});
-</script>
+    </script>
 </body>
 </html>
