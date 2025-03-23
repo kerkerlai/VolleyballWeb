@@ -261,12 +261,13 @@
     <script>
         // Firebase 相關設定 (請替換成您的 Firebase 配置)
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyB8PzKSCgIl0_JIVxetSK3Lujwpqr-eEJA",
+            authDomain: "volleyballweb-6476a.firebaseapp.com",
+            projectId: "volleyballweb-6476a",
+            storageBucket: "volleyballweb-6476a.firebasestorage.app",
+            messagingSenderId: "107455998937",
+            appId: "1:107455998937:web:1203dc9377ccf38a2547c8",
+            measurementId: "G-1J504YXCHY"
         };
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
@@ -275,6 +276,8 @@
 
         let currentUser = null;
         let userRole = 'user'; // 預設為一般使用者
+        // 在這裡新增管理員帳號的陣列
+        const adminEmails = ['kerkerlai@gmail.com', 'admin2@example.com'];
 
         // HTML 元素
         const 場地表單 = document.getElementById('場地表單');
@@ -327,23 +330,13 @@
         // 檢查使用者角色
         function checkUserRole() {
             if (currentUser) {
-                // 檢查是否為管理員 (這裡的邏輯需要您根據您的資料庫設計來調整)
-                // 例如，您可以將管理員的 UID 存在一個特定的集合中
-                db.collection('admins').doc(currentUser.uid).get()
-                    .then((doc) => {
-                        if (doc.exists) {
-                            userRole = 'admin';
-                        } else {
-                            userRole = 'user';
-                        }
-                        updateUI();
-                    })
-                    .catch((error) => {
-                        console.error("Error getting document:", error);
-                        alert('無法驗證您的身份，請稍後再試。');
-                        userRole = 'user';
-                        updateUI();
-                    });
+                // 檢查是否為管理員
+                if (adminEmails.includes(currentUser.email)) {
+                    userRole = 'admin';
+                } else {
+                    userRole = 'user';
+                }
+                updateUI();
             } else {
                 updateUI();
             }
