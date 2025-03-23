@@ -771,7 +771,7 @@
                     我的報名資料快取 = []; // 清空快取
                     snapshot.forEach(doc => {
                         const 場地資料 = doc.data();
-                        const userGender = 場地資料.男生已報名者.includes(currentUser.email) ? '男生' : '女生';
+                        const userGender = 場地資料.男生已報名者?.includes(currentUser.email) ? '男生' : '女生'; // 使用 optional chaining
                         我的報名資料快取.push({ id: doc.id, ...場地資料, gender: userGender });
                         const listItem = document.createElement('li');
                         listItem.innerHTML = `
@@ -791,7 +791,7 @@
                             const 場地ID = event.target.dataset.場地id;
                             db.collection('場地').doc(場地ID).get().then(doc=>{
                                  const 場地資料 = doc.data();
-                                 const gender = 場地資料.男生已報名者.includes(currentUser.email)? "男生":"女生";
+                                 const gender = 場地資料.男生已報名者?.includes(currentUser.email)? "男生":"女生"; // 使用 optional chaining
                                  let updateData = {
                                     報名人數: firebase.firestore.FieldValue.increment(-1),
                                     已報名者: firebase.firestore.FieldValue.arrayRemove(currentUser.email)
@@ -833,7 +833,7 @@
             場地資料.forEach(場地 => {
                  if (場地位置篩選.includes(場地.場地位置.toUpperCase())) {
                         const listItem = document.createElement('li');
-                        const userGender = 場地.男生已報名者.includes(currentUser.email) ? '男生' : '女生';
+                        const userGender = 場地.男生已報名者?.includes(currentUser.email) ? '男生' : '女生';
                         listItem.innerHTML = `
                             <span>場次：${場地.場次}</span>
                             <span>場地位置：${場地.場地位置}</span>
@@ -852,7 +852,7 @@
                     const 場地ID = event.target.dataset.場地id;
                      db.collection('場地').doc(場地ID).get().then(doc=>{
                          const 場地資料 = doc.data();
-                         const gender = 場地資料.男生已報名者.includes(currentUser.email)? "男生":"女生";
+                         const gender = 場地資料.男生已報名者?.includes(currentUser.email)? "男生":"女生";
                          let updateData = {
                             報名人數: firebase.firestore.FieldValue.increment(-1),
                             已報名者: firebase.firestore.FieldValue.arrayRemove(currentUser.email)
