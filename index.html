@@ -44,7 +44,7 @@
     <div class="container mx-auto p-4 md:p-6">
         <h1 class="text-2xl font-semibold text-gray-800 mb-6 text-center">排球場地報名系統</h1>
 
-        <div id="admin-section" class="mb-8 p-4 bg-white rounded-lg shadow-md">
+        <div id="admin-section" class="mb-8 p-4 bg-white rounded-lg shadow-md" style="display: none;">
             <h2 class="text-xl font-semibold text-gray-700 mb-4">管理員區塊</h2>
             <div class="mb-4">
                 <label for="slot-time" class="block text-gray-700 text-sm font-bold mb-2">場地時間 (例如: 3/23(日)下午12:20-15:20三米線):</label>
@@ -97,7 +97,7 @@
         function initGoogleAuth() {
             gapi.load('auth2', function() {
                 gapi.auth2.init({
-                    client_id: 'YOUR_CLIENT_ID.apps.googleusercontent.com', // 替換成你的 Google Client ID
+                    client_id: '753946966109-vbdn1mc2fu2ohfoedfqh0k1g2t8v06l9.apps.googleusercontent.com', // 替換成你的 Google Client ID
                     cookiepolicy: 'single_host_origin',
                     scope: 'profile email',
                 }).then(function() {
@@ -114,6 +114,7 @@
             const loginInfo = document.getElementById('login-info');
             const logoutButton = document.getElementById('logout-button');
             const mySlotsDiv = document.getElementById('my-slots');
+            const adminSection = document.getElementById('admin-section');
 
             if (isSignedIn) {
                 const user = gapi.auth2.getAuthInstance().currentUser.get();
@@ -125,11 +126,20 @@
                 logoutButton.style.display = 'block';
                 mySlotsDiv.style.display = 'block';
                 loadMySlots(); // 載入使用者已報名場次
+
+                // 判斷是否為管理員
+                if (isAdmin(user.getEmail())) {
+                    adminSection.style.display = 'block';
+                } else {
+                    adminSection.style.display = 'none';
+                }
+
             } else {
                 loginButton.style.display = 'block';
                 loginInfo.style.display = 'none';
                 logoutButton.style.display = 'none';
                 mySlotsDiv.style.display = 'none';
+                adminSection.style.display = 'none';
                 document.getElementById('my-slots-list').innerHTML = ''; // 清空我的報名場次
             }
         }
@@ -374,6 +384,14 @@
 
         function saveSlots() {
             localStorage.setItem('volleyballSlots', JSON.stringify(slots));
+        }
+
+        // 管理員帳號列表
+        const adminEmails = ['kerkerlai@gmail.com', 'another-admin@example.com']; // Replace with actual admin emails
+
+        // 檢查是否為管理員
+        function isAdmin(email) {
+            return adminEmails.includes(email);
         }
 
         // 頁面載入時執行
