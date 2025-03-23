@@ -224,7 +224,7 @@
                     <label for="開始時間">開始時間</label>
                     <input type="time" id="開始時間" name="開始時間" placeholder="請輸入開始時間" required>
                 </div>
-                 <div class="form-group">
+                <div class="form-group">
                     <label for="結束時間">結束時間</label>
                     <input type="time" id="結束時間" name="結束時間" placeholder="請輸入結束時間" required>
                 </div>
@@ -248,19 +248,19 @@
         <div id="場地列表">
             <h2 class="section-title">可報名場地</h2>
             <div id="場地列表內容">
-                </div>
+            </div>
         </div>
 
         <div id="報名確認表單" class="">
             <h2 class="section-title">我的報名表單</h2>
             <ul id="報名確認表單內容">
-                </ul>
+            </ul>
         </div>
 
         <div id="管理員後台" class="">
             <h2 class="section-title">管理員後台</h2>
             <div id="管理員後台內容">
-                </div>
+            </div>
         </div>
 
         <div id="登入註冊區" class="">
@@ -412,16 +412,16 @@
                 報名人數: 0,
                 已報名者: [] // 儲存已報名者的 UID
             })
-            .then(() => {
-                console.log('場地資訊發布成功');
-                alert('場地資訊發布成功！');
-                場地表單.reset();
-                載入場地資料(); // 重新載入場地資料
-            })
-            .catch((error) => {
-                console.error('場地資訊發布失敗', error);
-                alert('場地資訊發布失敗，請重試。' + error.message); // 顯示錯誤訊息
-            });
+                .then(() => {
+                    console.log('場地資訊發布成功');
+                    alert('場地資訊發布成功！');
+                    場地表單.reset();
+                    載入場地資料(); // 重新載入場地資料
+                })
+                .catch((error) => {
+                    console.error('場地資訊發布失敗', error);
+                    alert('場地資訊發布失敗，請重試。' + error.message); // 顯示錯誤訊息
+                });
         });
 
         // 取消發布按鈕事件
@@ -441,20 +441,20 @@
                         const 場地卡片 = document.createElement('div');
                         場地卡片.className = '場地卡片';
                         場地卡片.innerHTML = `
-                                <h3>${場地資料.場次}</h3>
-                                <p>場地位置：${場地資料.場地位置}</p>
-                                <p>費用：${場地資料.費用} 元</p>
-                                <p>日期：${場地資料.日期}</p>
-                                <p>開始時間：${場地資料.開始時間}</p>
-                                 <p>結束時間：${場地資料.結束時間}</p>
-                                <p>男生人數：${場地資料.男生人數}</p>
-                                 <p>女生人數：${場地資料.女生人數}</p>
-                                <p>其他敘述：${場地資料.其他敘述}</p>
-                                <p class="報名人數">報名人數：${場地資料.報名人數} / ${場地資料.男生人數 + 場地資料.女生人數}</p>
-                                <div class="actions">
-                                    <button class="btn-primary" data-場地id="${doc.id}">我要報名</button>
-                                     ${userRole === 'admin' ? `<button class="btn-danger delete-btn" data-場地id="${doc.id}">刪除</button>` : ''}
-                                </div>
+                            <h3>${場地資料.場次}</h3>
+                            <p>場地位置：${場地資料.場地位置}</p>
+                            <p>費用：${場地資料.費用} 元</p>
+                            <p>日期：${場地資料.日期}</p>
+                            <p>開始時間：${場地資料.開始時間}</p>
+                            <p>結束時間：${場地資料.結束時間}</p>
+                            <p>男生人數：${場地資料.男生人數}</p>
+                            <p>女生人數：${場地資料.女生人數}</p>
+                            <p>其他敘述：${場地資料.其他敘述}</p>
+                            <p class="報名人數">報名人數：${場地資料.報名人數} / ${場地資料.男生人數 + 場地資料.女生人數}</p>
+                            <div class="actions">
+                                <button class="btn-primary" data-場地id="${doc.id}">我要報名</button>
+                                ${userRole === 'admin' ? `<button class="btn-danger delete-btn" data-場地id="${doc.id}">刪除</button>` : ''}
+                            </div>
                         `;
                         場地列表內容.appendChild(場地卡片);
                     });
@@ -466,8 +466,8 @@
                             處理報名(場地ID);
                         });
                     });
-                    if (userRole === 'admin'){
-                         const 刪除按鈕們 = document.querySelectorAll('.場地卡片 .delete-btn');
+                    if (userRole === 'admin') {
+                        const 刪除按鈕們 = document.querySelectorAll('.場地卡片 .delete-btn');
                         刪除按鈕們.forEach(按鈕 => {
                             按鈕.addEventListener('click', (event) => {
                                 const 場地ID = event.target.dataset.場地id;
@@ -546,135 +546,135 @@
                             <span>${場地資料.場次}</span>
                             <span>時間：${場地資料.開始時間} ~ ${場地資料.結束時間}</span>
                             <span>地點：${場地資料.場地位置}</span>
-                            <span>日期：${場地資料.日期}</span>
-                            <button class="btn-danger delete-my-booking-btn" data-場地id="${doc.id}">取消報名</button>
+                            <button class="btn-secondary cancel-btn" data-場地id="${doc.id}">取消報名</button>
                         `;
                         報名確認表單內容.appendChild(場地資料項目);
                     });
-                    const 取消報名按鈕們 = document.querySelectorAll('.報名確認表單 .delete-my-booking-btn');  //取得所有取消報名按鈕
-                    console.log("找到的取消報名按鈕數量:", 取消報名按鈕們.length); // 【偵錯 1】 檢查按鈕數量
+                    // 設置取消報名按鈕的事件監聽器
+                    const 取消報名按鈕們 = document.querySelectorAll('.cancel-btn');
                     取消報名按鈕們.forEach(按鈕 => {
                         按鈕.addEventListener('click', (event) => {
                             const 場地ID = event.target.dataset.場地id;
-                            console.log("觸發取消報名事件，場地ID:", 場地ID, "按鈕:", event.target); // 【偵錯 2】 檢查事件是否觸發，以及場地ID和觸發事件的元素
-                            取消我的報名(場地ID);
+                            取消報名(場地ID);
                         });
                     });
                 })
                 .catch((error) => {
                     console.error('載入我的報名資料失敗', error);
-                    alert('載入我的報名資料失敗，請重試。');
+                    alert('載入我的報名資料失敗，請重試。' + error.message);
                 });
         }
 
-        // 載入場地統計資料 (僅管理員)
-        function 載入場地統計資料() {
-            if (userRole !== 'admin') return;
+        function 取消報名(場地ID) {
+            if (!currentUser) {
+                alert('請先登入才能取消報名。');
+                return;
+            }
 
+            db.collection('場地').doc(場地ID).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const 場地資料 = doc.data();
+                        if (!場地資料.已報名者 || !場地資料.已報名者.includes(currentUser.uid)) {
+                            alert('您尚未報名此場地，無法取消報名。');
+                            return;
+                        }
+
+                        // 更新報名人數和已報名者
+                        db.collection('場地').doc(場地ID).update({
+                            報名人數: Math.max(0, (場地資料.報名人數 || 1) - 1), // 避免人數變負數
+                            已報名者: firebase.firestore.FieldValue.arrayRemove(currentUser.uid)
+                        }).then(() => {
+                            console.log('取消報名成功');
+                            alert('取消報名成功！');
+                            載入場地資料(); // 重新載入場地資料，更新列表
+                            載入我的報名資料(); // 重新載入我的報名資料
+                        }).catch((error) => {
+                            console.error('取消報名失敗', error);
+                            alert('取消報名失敗，請重試。' + error.message);
+                        });
+                    } else {
+                        console.error('場地不存在');
+                        alert('場地不存在，請確認。');
+                    }
+                }).catch((error) => {
+                    console.error('Error getting document:', error);
+                    alert('發生錯誤，請重試。');
+                });
+        }
+
+        // 載入場地統計資料 (管理員)
+        function 載入場地統計資料() {
             管理員後台內容.innerHTML = ''; // 清空現有內容
             db.collection('場地').get()
                 .then((snapshot) => {
-                    let 總報名人數 = 0;
-                    let 場地統計列表 = document.createElement('ul');
+                    if (snapshot.empty) {
+                        管理員後台內容.innerHTML = '<p>目前沒有任何場地資料。</p>';
+                        return;
+                    }
+
+                    let totalRevenue = 0;
+                    const 場地統計資料列表 = {};
+
                     snapshot.forEach((doc) => {
                         const 場地資料 = doc.data();
-                        總報名人數 += 場地資料.報名人數 || 0;
-                        const 場地統計項目 = document.createElement('li');
-                        場地統計項目.innerHTML = `
-                            <span>${場地資料.場次}：</span>
-                            <span>報名人數：${場地資料.報名人數 || 0}</span>
-                        `;
-                        場地統計列表.appendChild(場地統計項目);
+                        const 場地收入 = (場地資料.報名人數 || 0) * 場地資料.費用;
+                        totalRevenue += 場地收入;
+
+                        if (!場地統計資料列表[場地資料.場地位置]) {
+                            場地統計資料列表[場地資料.場地位置] = {
+                                totalBookings: 0,
+                                totalRevenue: 0,
+                                場次: []
+                            };
+                        }
+                        場地統計資料列表[場地資料.場地位置].totalBookings += (場地資料.報名人數 || 0);
+                        場地統計資料列表[場地資料.場地位置].totalRevenue += 場地收入;
+                        場地統計資料列表[場地資料.場地位置].場次.push({
+                            場次名稱: 場地資料.場次,
+                            報名人數: 場地資料.報名人數 || 0,
+                            收入: 場地收入
+                        });
                     });
 
                     const 統計卡片 = document.createElement('div');
                     統計卡片.className = '場地統計卡片';
                     統計卡片.innerHTML = `
-                        <h3>總報名人數：${總報名人數}</h3>
-                        <h3>各場地報名人數：</h3>
-                        ${場地統計列表.outerHTML}
+                        <h3>總收入</h3>
+                        <p>${totalRevenue} 元</p>
                     `;
                     管理員後台內容.appendChild(統計卡片);
+
+                    for (const 場地位置 in 場地統計資料列表) {
+                        const 場地統計 = 場地統計資料列表[場地位置];
+                        const 場地統計卡片 = document.createElement('div');
+                        場地統計卡片.className = '場地統計卡片';
+                        場地統計卡片.innerHTML = `
+                            <h3>${場地位置}</h3>
+                            <p>總報名人數：${場地統計.totalBookings}</p>
+                            <p>總收入：${場地統計.totalRevenue} 元</p>
+                            <ul>
+                                <li>
+                                    ${場地統計.場次.map(場次 =>
+                                        `<span>${場次.場次名稱}：${場次.報名人數} 人，收入：${場次.收入} 元</span><br>`
+                                    ).join('')}
+                                </li>
+                            </ul>
+                        `;
+                        管理員後台內容.appendChild(場地統計卡片);
+                    }
                 })
                 .catch((error) => {
                     console.error('載入場地統計資料失敗', error);
-                    alert('載入場地統計資料失敗，請重試。');
+                    alert('載入場地統計資料失敗，請重試。' + error.message);
                 });
         }
 
-        // 刪除場地 (僅管理員)
-        function 刪除場地(場地ID) {
-            if (userRole !== 'admin') return;
-
-            db.collection('場地').doc(場地ID).delete()
-                .then(() => {
-                    console.log('場地刪除成功');
-                    alert('場地刪除成功！');
-                    載入場地資料(); // 重新載入場地資料
-                    載入我的報名資料(); // 更新我的報名資料
-                })
-                .catch((error) => {
-                    console.error('場地刪除失敗', error);
-                    alert('場地刪除失敗，請重試。');
-                });
-        }
-
-       // 取消我的報名
-       function 取消我的報名(場地ID) {
-            console.log('取消我的報名', 場地ID); // 【偵錯 3】 檢查函式是否被呼叫
-            if (!currentUser) {
-                console.log('使用者未登入');  // 【偵錯 4】 檢查是否取得 currentUser
-                return;
-            }
-
-            db.collection('場地').doc(場地ID).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        const 場地資料 = doc.data();
-                        console.log('取得場地資料', 場地資料); // 【偵錯 5】 檢查是否取得場地資料
-                        if (場地資料.已報名者.includes(currentUser.uid)) {
-                            console.log('使用者已報名此場地'); // 【偵錯 6】 檢查是否包含使用者 UID
-                            // 檢查當前人數是否大於 0，避免出現負數
-                            const 當前人數 = 場地資料.報名人數 || 0;
-                            const 新報名人數 = Math.max(0, 當前人數 - 1);
-                            console.log('新的報名人數', 新報名人數); // 【偵錯 7】  確認新的報名人數
-
-                            // 更新 Firestore 中的資料
-                            db.collection('場地').doc(場地ID).update({
-                                報名人數: 新報名人數,
-                                已報名者: firebase.firestore.FieldValue.arrayRemove(currentUser.uid)
-                            }).then(() => {
-                                console.log('取消報名成功');
-                                alert('取消報名成功！');
-                                載入場地資料(); // 重新載入場地資料
-                                載入我的報名資料(); // 重新載入我的報名資料
-                            }).catch(error => {
-                                console.error("取消報名失敗", error);
-                                alert('取消報名失敗，請重試。');
-                            });
-                        } else {
-                            console.log('使用者未報名此場地'); // 【偵錯 8】 
-                            alert('您未報名此場地。');
-                        }
-                    } else {
-                        console.log('場地不存在'); // 【偵錯 9】
-                        alert('場地不存在。');
-                    }
-                }).catch(error => {
-                    console.error("Error getting document:", error);
-                    alert('發生錯誤，請重試。');
-                });
-        }
-
-        // 檢查登入狀態
+        // 頁面載入時執行
         auth.onAuthStateChanged((user) => {
             currentUser = user;
             checkUserRole();
-            載入我的報名資料(); // 確保在登入狀態改變時載入報名資料
         });
-        window.onload = function () {
-            載入場地資料();
-        }
     </script>
 </body>
 </html>
