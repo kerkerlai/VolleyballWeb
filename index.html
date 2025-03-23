@@ -556,7 +556,7 @@
                     取消報名按鈕們.forEach(按鈕 => {
                         按鈕.addEventListener('click', (event) => {
                             const 場地ID = event.target.dataset.場地id;
-                            console.log("觸發取消報名事件，場地ID:", 場地ID); // 【偵錯 2】 檢查事件是否觸發，以及場地ID
+                            console.log("觸發取消報名事件，場地ID:", 場地ID, "按鈕:", event.target); // 【偵錯 2】 檢查事件是否觸發，以及場地ID和觸發事件的元素
                             取消我的報名(場地ID);
                         });
                     });
@@ -670,8 +670,11 @@
         auth.onAuthStateChanged((user) => {
             currentUser = user;
             checkUserRole();
+            載入我的報名資料(); // 確保在登入狀態改變時載入報名資料
         });
-
+        window.onload = function () {
+            載入場地資料();
+        }
     </script>
 </body>
 </html>
