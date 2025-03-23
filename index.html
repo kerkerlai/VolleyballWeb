@@ -551,11 +551,12 @@
                         `;
                         報名確認表單內容.appendChild(場地資料項目);
                     });
-                    const 取消報名按鈕們 = document.querySelectorAll('.報名確認表單 .delete-my-booking-btn');
+                    const 取消報名按鈕們 = document.querySelectorAll('.報名確認表單 .delete-my-booking-btn');  //取得所有取消報名按鈕
+                    console.log("找到的取消報名按鈕數量:", 取消報名按鈕們.length); // 【偵錯 1】 檢查按鈕數量
                     取消報名按鈕們.forEach(按鈕 => {
                         按鈕.addEventListener('click', (event) => {
                             const 場地ID = event.target.dataset.場地id;
-                            console.log("觸發取消報名事件，場地ID:", 場地ID); // 【偵錯 8】 檢查事件是否觸發，以及場地ID
+                            console.log("觸發取消報名事件，場地ID:", 場地ID); // 【偵錯 2】 檢查事件是否觸發，以及場地ID
                             取消我的報名(場地ID);
                         });
                     });
@@ -620,9 +621,9 @@
 
        // 取消我的報名
        function 取消我的報名(場地ID) {
-            console.log('取消報名', 場地ID); // 【偵錯 1】 檢查函式是否被呼叫
+            console.log('取消我的報名', 場地ID); // 【偵錯 3】 檢查函式是否被呼叫
             if (!currentUser) {
-                console.log('使用者未登入');  // 【偵錯 2】 檢查是否取得 currentUser
+                console.log('使用者未登入');  // 【偵錯 4】 檢查是否取得 currentUser
                 return;
             }
 
@@ -630,9 +631,9 @@
                 .then(doc => {
                     if (doc.exists) {
                         const 場地資料 = doc.data();
-                        console.log('取得場地資料', 場地資料); // 【偵錯 3】 檢查是否取得場地資料
+                        console.log('取得場地資料', 場地資料); // 【偵錯 5】 檢查是否取得場地資料
                         if (場地資料.已報名者.includes(currentUser.uid)) {
-                            console.log('使用者已報名此場地'); // 【偵錯 4】 檢查是否包含使用者 UID
+                            console.log('使用者已報名此場地'); // 【偵錯 6】 檢查是否包含使用者 UID
                             // 檢查當前人數是否大於 0，避免出現負數
                             const 當前人數 = 場地資料.報名人數 || 0;
                             const 新報名人數 = Math.max(0, 當前人數 - 1);
@@ -652,11 +653,11 @@
                                 alert('取消報名失敗，請重試。');
                             });
                         } else {
-                            console.log('使用者未報名此場地'); // 【偵錯 5】 
+                            console.log('使用者未報名此場地'); // 【偵錯 8】 
                             alert('您未報名此場地。');
                         }
                     } else {
-                        console.log('場地不存在'); // 【偵錯 6】
+                        console.log('場地不存在'); // 【偵錯 9】
                         alert('場地不存在。');
                     }
                 }).catch(error => {
