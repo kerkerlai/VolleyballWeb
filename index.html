@@ -221,12 +221,12 @@
                     <input type="date" id="日期" name="日期" required>
                 </div>
                 <div class="form-group">
-                    <label for="星期">星期</label>
-                    <input type="text" id="星期" name="星期" placeholder="請輸入星期" required>
+                    <label for="開始時間">開始時間</label>
+                    <input type="time" id="開始時間" name="開始時間" placeholder="請輸入開始時間" required>
                 </div>
-                <div class="form-group">
-                    <label for="時間">時間</label>
-                    <input type="time" id="時間" name="時間" placeholder="請輸入時間" required>
+                 <div class="form-group">
+                    <label for="結束時間">結束時間</label>
+                    <input type="time" id="結束時間" name="結束時間" placeholder="請輸入結束時間" required>
                 </div>
                 <div class="form-group">
                     <label for="男生人數">男生人數</label>
@@ -274,13 +274,13 @@
     <script>
         // Firebase 相關設定 (請替換成您的 Firebase 配置)
         const firebaseConfig = {
-            apiKey: "AIzaSyB8PzKSCgIl0_JIVxetSK3Lujwpqr-eEJA",
-            authDomain: "volleyballweb-6476a.firebaseapp.com",
-            projectId: "volleyballweb-6476a",
-            storageBucket: "volleyballweb-6476a.firebasestorage.app",
-            messagingSenderId: "107455998937",
-            appId: "1:107455998937:web:1203dc9377ccf38a2547c8",
-            measurementId: "G-1J504YXCHY"
+            apiKey: "YOUR_API_KEY",  // 請替換成您的金鑰
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",  // 請替換成您的專案ID
+            projectId: "YOUR_PROJECT_ID",  // 請替換成您的專案ID
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",  // 請替換成您的專案ID
+            messagingSenderId: "YOUR_SENDER_ID", // 請替換成您的 sender ID
+            appId: "YOUR_APP_ID",  // 請替換成您的 APP ID
+            measurementId: "YOUR_MEASUREMENT_ID"  // 請替換成您的 measurement ID
         };
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
@@ -378,16 +378,7 @@
             }
         }
 
-        // 時間選項陣列
-        const timeOptions = [
-            "星期一 18:00-20:00",
-            "星期二 18:00-20:00",
-            "星期三 18:00-20:00",
-            "星期四 18:00-20:00",
-            "星期五 18:00-20:00",
-            "星期六 14:00-16:00",
-            "星期日 14:00-16:00"
-        ];
+
 
         // 表單提交事件
         場地表單.addEventListener('submit', (event) => {
@@ -397,13 +388,13 @@
             const 場地位置 = document.getElementById('場地位置').value;
             const 費用 = parseInt(document.getElementById('費用').value);
             const 日期 = document.getElementById('日期').value;
-            const 星期 = document.getElementById('星期').value;
-            const 時間 = document.getElementById('時間').value;
+            const 開始時間 = document.getElementById('開始時間').value;
+            const 結束時間 = document.getElementById('結束時間').value;
             const 男生人數 = parseInt(document.getElementById('男生人數').value);
             const 女生人數 = parseInt(document.getElementById('女生人數').value);
             const 其他敘述 = document.getElementById('其他敘述').value;
 
-            if (!場次 || !場地位置 || isNaN(費用) || !日期 || !星期 || !時間 || isNaN(男生人數) || isNaN(女生人數)) {
+            if (!場次 || !場地位置 || isNaN(費用) || !日期 || !開始時間 || !結束時間 || isNaN(男生人數) || isNaN(女生人數)) {
                 alert('請填寫所有必填欄位。');
                 return;
             }
@@ -413,8 +404,8 @@
                 場地位置: 場地位置,
                 費用: 費用,
                 日期: 日期,
-                星期: 星期,
-                時間: 時間,
+                開始時間: 開始時間,
+                結束時間: 結束時間,
                 男生人數: 男生人數,
                 女生人數: 女生人數,
                 其他敘述: 其他敘述,
@@ -438,6 +429,8 @@
             場地表單.reset();
         });
 
+        let 已載入場地 = false; // 用於追蹤是否已載入場地資料
+
         // 載入場地資料
         function 載入場地資料() {
             場地列表內容.innerHTML = ''; // 清空現有內容
@@ -451,9 +444,9 @@
                                 <h3>${場地資料.場次}</h3>
                                 <p>場地位置：${場地資料.場地位置}</p>
                                 <p>費用：${場地資料.費用} 元</p>
-                                 <p>日期：${場地資料.日期}</p>
-                                <p>星期：${場地資料.星期}</p>
-                                <p>時間：${場地資料.時間}</p>
+                                <p>日期：${場地資料.日期}</p>
+                                <p>開始時間：${場地資料.開始時間}</p>
+                                 <p>結束時間：${場地資料.結束時間}</p>
                                 <p>男生人數：${場地資料.男生人數}</p>
                                  <p>女生人數：${場地資料.女生人數}</p>
                                 <p>其他敘述：${場地資料.其他敘述}</p>
@@ -482,6 +475,7 @@
                             });
                         });
                     }
+                    已載入場地 = true; // 標記為已載入
                 })
                 .catch((error) => {
                     console.error('載入場地資料失敗', error);
@@ -537,7 +531,8 @@
         // 載入我的報名資料
         function 載入我的報名資料() {
             報名確認表單內容.innerHTML = ''; // 清空現有內容
-            if (!currentUser) return
+            if (!currentUser) return;
+
             db.collection('場地').where('已報名者', 'array-contains', currentUser.uid).get()
                 .then((snapshot) => {
                     if (snapshot.empty) {
@@ -546,16 +541,15 @@
                     }
                     snapshot.forEach((doc) => {
                         const 場地資料 = doc.data();
-                        const 報名資料項目 = document.createElement('li');
-                        報名資料項目.innerHTML = `
+                        const 場地資料項目 = document.createElement('li');
+                        場地資料項目.innerHTML = `
                             <span>${場地資料.場次}</span>
-                            <span>時間：${場地資料.時間}</span>
+                            <span>時間：${場地資料.開始時間} ~ ${場地資料.結束時間}</span>
                             <span>地點：${場地資料.場地位置}</span>
-                             <span>日期：${場地資料.日期}</span>
-                            <span>星期：${場地資料.星期}</span>
+                            <span>日期：${場地資料.日期}</span>
                             <button class="btn-danger delete-my-booking-btn" data-場地id="${doc.id}">取消報名</button>
                         `;
-                        報名確認表單內容.appendChild(報名資料項目);
+                        報名確認表單內容.appendChild(場地資料項目);
                     });
                     const 取消報名按鈕們 = document.querySelectorAll('.報名確認表單 .delete-my-booking-btn');
                     取消報名按鈕們.forEach(按鈕 => {
@@ -623,7 +617,7 @@
                 });
         }
 
-        // 取消我的報名
+       // 取消我的報名
         function 取消我的報名(場地ID) {
             if (!currentUser) return;
 
@@ -632,9 +626,13 @@
                     if (doc.exists) {
                         const 場地資料 = doc.data();
                         if (場地資料.已報名者.includes(currentUser.uid)) {
+                            // 檢查當前人數是否大於 0，避免出現負數
+                            const 當前人數 = 場地資料.報名人數 || 0;
+                            const 新報名人數 = Math.max(0, 當前人數 - 1);
+
                             // 更新 Firestore 中的資料
                             db.collection('場地').doc(場地ID).update({
-                                報名人數: Math.max(0, (場地資料.報名人數 || 0) - 1), // 防止人數變負數
+                                報名人數: 新報名人數,
                                 已報名者: firebase.firestore.FieldValue.arrayRemove(currentUser.uid)
                             }).then(() => {
                                 console.log('取消報名成功');
