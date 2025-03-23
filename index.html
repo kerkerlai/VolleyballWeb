@@ -666,7 +666,7 @@
             if (!currentUser) return;
 
             報名確認表單內容.innerHTML = '';
-            db.collection('場地').where('已報名者', 'array-contains', currentUser.uid).orderBy('日期', 'asc').get()
+            db.collection('場地').where('已報名者', 'array-contains', currentUser.uid).get()
                 .then((snapshot) => {
                     snapshot.forEach((doc) => {
                         const 場地資料 = doc.data();
