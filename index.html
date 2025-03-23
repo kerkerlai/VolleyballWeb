@@ -619,8 +619,11 @@
 
        // 取消我的報名
         function 取消我的報名(場地ID) {
-            if (!currentUser) return;
-
+            console.log('取消報名', 場地ID);
+            if (!currentUser) {
+                console.log('使用者未登入');
+                return;
+            }
             db.collection('場地').doc(場地ID).get()
                 .then(doc => {
                     if (doc.exists) {
